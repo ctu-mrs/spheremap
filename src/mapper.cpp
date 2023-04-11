@@ -1,7 +1,7 @@
 #include <geometry_msgs/Vector3.h>
 #include <octomap_msgs/Octomap.h>
-#include <search_planning/mapper.h>
-#include <search_planning/utility_functions.h>
+#include <spheremap_server/mapper.h>
+#include <spheremap_server/utility_functions.h>
 /* every nodelet must include macros which export the class as a nodelet plugin */
 #include <pluginlib/class_list_macros.h>
 
@@ -19,7 +19,7 @@
 #include <tf2_ros/transform_listener.h>
 #include <geometry_msgs/TransformStamped.h>
 
-namespace search_planning
+namespace spheremap_server
 {
 
 /* initialize() //{ */
@@ -130,7 +130,7 @@ void ExplorationMapper::initialize(ros::NodeHandle* nh) {
 
   for (uint i = 0; i < robot_names_list_.size(); i++) {
     /* robot_names_map_to_ids_[robot_names_list_[i]] = i; */
-    topic_name = "/" + robot_names_list_[i] + "/" + "search_planning/topology_map";
+    topic_name = "/" + robot_names_list_[i] + "/" + "spheremap_server/topology_map";
     /* ping_topic_name                               = "/" + robot_names_list_[i] + "/ping_out"; */
     ROS_INFO("Subscribing to: %s", topic_name.c_str());
     topology_subscriber_list_.push_back(
@@ -140,7 +140,7 @@ void ExplorationMapper::initialize(ros::NodeHandle* nh) {
                                  boost::bind(&ExplorationMapper::callbackSegmapMsgReceived, this, _1,
                                              i)));  // TODO: solve this issue
 
-    topic_name = "/" + uav_name_ + "/" + "search_planning_vis/topology_maps_received/" + robot_names_list_[i];
+    topic_name = "/" + uav_name_ + "/" + "spheremap_server_vis/topology_maps_received/" + robot_names_list_[i];
     topology_vis_publisher_list_.push_back(nh->advertise<visualization_msgs::MarkerArray>(topic_name, 1));
     ROS_INFO("Publishing on: %s", topic_name.c_str());
   }
@@ -814,7 +814,7 @@ void ExplorationMapper::callbackTimerCalculateKdtree(const ros::TimerEvent& te) 
   BoundingBox generation_bbx(hires_mode_ ? absolute_max_map_update_dist_highres + 10 : absolute_max_map_update_dist + 10, current_position_);
 
   occupancy_octree_ptr_mutex_.lock();
-  std::vector<pcl::PointXYZ> pcl_points = search_planning::octomapToPointcloud(occupancy_octree, generation_bbx);
+  std::vector<pcl::PointXYZ> pcl_points = spheremap_server::octomapToPointcloud(occupancy_octree, generation_bbx);
   /* ROS_INFO("[SphereMap-kDtree]: kdtree has %lu points", pcl_points.size()); */
   occupancy_octree_ptr_mutex_.unlock();
 
@@ -999,7 +999,7 @@ void ExplorationMapper::generateFrontierNodes(std::shared_ptr<octomap::OcTree> o
     }
 
     /* check if node is at least partially unknown */
-    if (!search_planning::hasNodeUnknownChildren(&(*it), occupancy_octree, search_depth)) {
+    if (!spheremap_server::hasNodeUnknownChildren(&(*it), occupancy_octree, search_depth)) {
       continue;
     }
 
@@ -1209,7 +1209,7 @@ void ExplorationMapper::calculateFrontierGroups2(bool disciard_small_frontier_gr
   std::vector<FrontierGroup> generated_fgs = {};
   ros::WallTime              start2_, end2_;
   /* start2_                                   = ros::WallTime::now(); */
-  /* std::vector<octomap::point3d> deltapoints = search_planning::getCylinderSamplingPoints(num_points_circle, delta_r, delta_z, num_circles, num_layers); */
+  /* std::vector<octomap::point3d> deltapoints = spheremap_server::getCylinderSamplingPoints(num_points_circle, delta_r, delta_z, num_circles, num_layers); */
   /* end2_                                     = ros::WallTime::now(); */
   /* ROS_INFO("finding cylinder points took %f ms", (end2_ - start2_).toSec() * 1000); */
 
@@ -1237,7 +1237,7 @@ void ExplorationMapper::calculateFrontierGroups2(bool disciard_small_frontier_gr
 
 
   /* SAMPLE POINTS IN BBX */
-}  // namespace search_planning
+}  // namespace spheremap_server
    //}
 
 /* calculateFrontierGroupsForSegmapSending() //{ */
@@ -1271,7 +1271,7 @@ void ExplorationMapper::calculateFrontierGroupsForSegmapSending() {
   /* std::vector<FrontierGroup> generated_fgs = {}; */
   ros::WallTime start2_, end2_;
 
-  std::vector<octomap::point3d> deltapoints = search_planning::getCylinderSamplingPoints(num_points_circle, delta_r, delta_z, num_circles, num_layers);
+  std::vector<octomap::point3d> deltapoints = spheremap_server::getCylinderSamplingPoints(num_points_circle, delta_r, delta_z, num_circles, num_layers);
   /* end2_                                     = ros::WallTime::now(); */
   /* ROS_INFO("finding cylinder points took %f ms", (end2_ - start2_).toSec() * 1000); */
 
@@ -1434,4 +1434,4 @@ std::vector<FrontierGroup> ExplorationMapper::filterFrontierGroups(std::vector<F
 
 //}
 
-}  // namespace search_planning
+}  // namespace spheremap_server

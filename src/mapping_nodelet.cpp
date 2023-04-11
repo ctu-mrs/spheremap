@@ -1,9 +1,9 @@
-#include <search_planning/mapping_nodelet.h>
+#include <spheremap_server/mapping_nodelet.h>
 /* every nodelet must include macros which export the class as a nodelet plugin */
 #include <pluginlib/class_list_macros.h>
 
 
-namespace search_planning
+namespace spheremap_server
 {
 
 /* onInit() //{ */
@@ -20,6 +20,6 @@ void MappingNodelet::onInit() {
 }
 //}
 
-}  // namespace search_planning
+}  // namespace spheremap_server
 /* every nodelet must export its class as nodelet plugin */
-PLUGINLIB_EXPORT_CLASS(search_planning::MappingNodelet, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS(spheremap_server::MappingNodelet, nodelet::Nodelet);

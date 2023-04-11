@@ -1,12 +1,12 @@
-#include <search_planning/mapper.h>
-#include <search_planning/utility_functions.h>
+#include <spheremap_server/mapper.h>
+#include <spheremap_server/utility_functions.h>
 /* every nodelet must include macros which export the class as a nodelet plugin */
 #include <pluginlib/class_list_macros.h>
 #include <algorithm>
 #include <random>
 
 
-namespace search_planning
+namespace spheremap_server
 {
 
 /* SegMap //{ */
@@ -34,7 +34,7 @@ void SegMap::initializeOctomaps(float resolution, float safedist) {
 void SegMap::update(octomap::point3d current_position_, [[maybe_unused]] float current_heading_, std::shared_ptr<octomap::OcTree> occupancy_octree_,
                     std::shared_ptr<PCLMap> pcl_map_ptr, std::vector<int>& segs_to_update) {
 
-  /* std::vector<pcl::PointXYZ> pcl_points = search_planning::octomapToPointcloud(occupancy_octree_, ); */
+  /* std::vector<pcl::PointXYZ> pcl_points = spheremap_server::octomapToPointcloud(occupancy_octree_, ); */
   /* pcl::PointCloud<pcl::PointXYZ>::Ptr simulated_pointcloud = PCLMap::pclVectorToPointcloud(pcl_points); */
   /* tmp_ptr->initKDTreeSearch(simulated_pointcloud); */
 
@@ -118,7 +118,7 @@ void SegMap::update(octomap::point3d current_position_, [[maybe_unused]] float c
   mutex_ptr_->lock();
   int seg_id = segment_octree_->getSegmentID(current_position_);
   if (seg_id < 0) {
-    if (search_planning::isPointSafe(current_position_, segment_octree_->voxel_min_safe_distance_, occupancy_octree_)) {
+    if (spheremap_server::isPointSafe(current_position_, segment_octree_->voxel_min_safe_distance_, occupancy_octree_)) {
       segment_octree_->growSegment(current_position_, topology_mapping_settings_.segment_max_size_, false, topology_mapping_settings_.compactness_delta_,
                                    topology_mapping_settings_.convexity_threshold);
     } else {
@@ -128,14 +128,14 @@ void SegMap::update(octomap::point3d current_position_, [[maybe_unused]] float c
       for (int i = 0; i < num_sampled_points_for_growing; i++) {
         octomap::point3d     test_point = current_position_ + getRandomPointInSphere(max_growing_sampling_dist);
         octomap::OcTreeNode* oc_node    = occupancy_octree_->search(test_point, voxel_depth);
-        if (oc_node == NULL || occupancy_octree_->isNodeOccupied(oc_node) || search_planning::hasNodeUnknownChildren(oc_node, occupancy_octree_, voxel_depth)) {
+        if (oc_node == NULL || occupancy_octree_->isNodeOccupied(oc_node) || spheremap_server::hasNodeUnknownChildren(oc_node, occupancy_octree_, voxel_depth)) {
           continue;
         }
         octomap::SegmentNode* seg_node = segment_octree_->search(test_point);
         if (seg_node != NULL && seg_node->getSegmentID() > -1) {
           continue;
         }
-        if (search_planning::isPointSafe(test_point, segment_octree_->voxel_min_safe_distance_, occupancy_octree_)) {
+        if (spheremap_server::isPointSafe(test_point, segment_octree_->voxel_min_safe_distance_, occupancy_octree_)) {
           segment_octree_->growSegment(test_point, topology_mapping_settings_.segment_max_size_, false, topology_mapping_settings_.compactness_delta_,
                                        topology_mapping_settings_.convexity_threshold);
           break;
@@ -145,7 +145,7 @@ void SegMap::update(octomap::point3d current_position_, [[maybe_unused]] float c
   } else {
     segment_octree_->expandSegment(seg_id, topology_mapping_settings_.segment_max_size_, topology_mapping_settings_.compactness_delta_,
                                    topology_mapping_settings_.convexity_threshold);
-    search_planning::BoundingBox bbx(50, current_position_);
+    spheremap_server::BoundingBox bbx(50, current_position_);
     /* checkNarrowPassagesNearSegments(bbx, occupancy_octree_, pcl_map_ptr); */
   }
 
@@ -186,7 +186,7 @@ void SegMap::update(octomap::point3d current_position_, [[maybe_unused]] float c
         continue;
       }
       last_pos_was_in_segment = false;
-      if (search_planning::isPointSafe(iter_point, topology_mapping_settings_.raycast_growing_safe_distance, occupancy_octree_)) {
+      if (spheremap_server::isPointSafe(iter_point, topology_mapping_settings_.raycast_growing_safe_distance, occupancy_octree_)) {
 
         mutex_ptr_->lock();
         int               grown_id = segment_octree_->growSegment(iter_point, topology_mapping_settings_.segment_max_size_, false,
@@ -254,7 +254,7 @@ void SegMap::update(octomap::point3d current_position_, [[maybe_unused]] float c
 
           octomap::OcTreeNode* ocnode = occupancy_octree_->search(test_key, voxel_depth);
 
-          if (ocnode == NULL || occupancy_octree_->isNodeOccupied(ocnode) || search_planning::hasNodeUnknownChildren(ocnode, occupancy_octree_, voxel_depth)) {
+          if (ocnode == NULL || occupancy_octree_->isNodeOccupied(ocnode) || spheremap_server::hasNodeUnknownChildren(ocnode, occupancy_octree_, voxel_depth)) {
             continue;
           }
           octomap::SegmentNode* segnode = segment_octree_->search(test_key);
@@ -493,7 +493,7 @@ void SegMap::update(octomap::point3d current_position_, [[maybe_unused]] float c
   // FIXME this frees the memory
   segment_octree_->occupancy_octree = NULL;
   segment_octree_->pcl_map_ptr      = NULL;
-}  // namespace search_planning
+}  // namespace spheremap_server
 //}
 
 /* SegMap::convertSegmapToMsg() //{ */
@@ -695,7 +695,7 @@ std::shared_ptr<SegMap> SegMap::convertFragmentMsgsToSegmap(std::vector<SegmapMs
       seg.block_b                              = block_b;
       seg.block_c                              = block_c;
       seg.bounding_sphere_radius               = sqrt(pow(block_a, 2) + pow(block_b, 2) + pow(block_c, 2));
-      std::vector<octomap::point3d> block_dirs = search_planning::blockAnglesToDirections(alpha, 0);
+      std::vector<octomap::point3d> block_dirs = spheremap_server::blockAnglesToDirections(alpha, 0);
       seg.block_dirs                           = block_dirs;
 
 
@@ -903,7 +903,7 @@ void SegMap::updateExplorednessProbabilitiesBasedOnOtherSegmaps(std::vector<std:
       }
     }
   }
-}  // namespace search_planning
+}  // namespace spheremap_server
 //}
 
 /* SegMap::updateWithExecutedTrajectory() //{ */
@@ -927,7 +927,7 @@ void SegMap::updateWithExecutedTrajectory(std::vector<octomap::point3d>* traj, s
         ROS_INFO("[TrajectoryPortalGenerator]: found two segments %d, %d connected by trajectory, adding portal.", last_id, seg_id);
         octomap::point3d     midpoint = (point + last_point) * 0.5;
         octomap::OcTreeNode* ocnode   = occupancy_octree_->search(midpoint);
-        if (ocnode != NULL && !occupancy_octree_->isNodeOccupied(ocnode) && !search_planning::hasNodeUnknownChildren(ocnode, occupancy_octree_, voxel_depth)) {
+        if (ocnode != NULL && !occupancy_octree_->isNodeOccupied(ocnode) && !spheremap_server::hasNodeUnknownChildren(ocnode, occupancy_octree_, voxel_depth)) {
           octomap::SegmentPortal portal;
           portal.position = midpoint;
           portal.id1      = std::min(seg_id, last_id);
@@ -1084,7 +1084,7 @@ int SegMap::checkNarrowPassagesNearSegments(BoundingBox bbx, std::shared_ptr<oct
 //}
 
 //}
-};  // namespace search_planning
+};  // namespace spheremap_server
 
 namespace octomap
 {
@@ -1205,7 +1205,7 @@ std::optional<octomap::point3d> SegmentOcTree::getBestPortalPositionBetweenSegme
   /*   best_dist = pow(2,m) * min_safe_distance; */
   /*   std::vector<octomap::point3d> new_points = {}; */
   /*   for(uint i = 0; i < test_points.size(); i++){ */
-  /*     if(search_planning::isPointSafe(test_points[i], best_dist, occupancy_octree_)){ */
+  /*     if(spheremap_server::isPointSafe(test_points[i], best_dist, occupancy_octree_)){ */
   /*       new_points.push_back(test_points[i]); */
   /*     } */
   /*   } */
@@ -1220,7 +1220,7 @@ std::optional<octomap::point3d> SegmentOcTree::getBestPortalPositionBetweenSegme
   /* return test_points[0]; */
 
 
-  search_planning::BoundingBox bbx = search_planning::getPointsBoundingBox(test_points);
+  spheremap_server::BoundingBox bbx = spheremap_server::getPointsBoundingBox(test_points);
   bbx.expand(3);
   octomap::OcTreeKey bbx_start_key = coordToKey(bbx.x1, bbx.y1, bbx.z1);
   octomap::OcTreeKey bbx_end_key   = coordToKey(bbx.x2, bbx.y2, bbx.z2);
@@ -1325,9 +1325,9 @@ int SegmentOcTree::expandSegment(int seg_id, float max_radius, float compactness
       border_points.push_back(occupancy_octree->keyToCoord(dead_frontier_keys[k], 14));
     }
     /* vectors of pca are 4: mean position, largest halfaxis, middle, smallest */
-    search_planning::filterPoints(&border_points, &border_points_filtered, segments[seg_index].bounding_sphere_radius / 3);
+    spheremap_server::filterPoints(&border_points, &border_points_filtered, segments[seg_index].bounding_sphere_radius / 3);
 
-    std::vector<octomap::point3d> pca_res               = search_planning::getPCA3D(border_points_filtered);
+    std::vector<octomap::point3d> pca_res               = spheremap_server::getPCA3D(border_points_filtered);
     octomap::point3d              smallest_halfaxis_dir = pca_res[3].normalized();
 
     /* PROJECT ALL POINTS ONTO THE LOWERMOST AXIS AND GET THE HIGHER LENGTH OF THIS AXIS*/
@@ -1414,7 +1414,7 @@ int SegmentOcTree::expandSegment(int seg_id, float max_radius, float compactness
         }
         OcTreeNode* oc_node = occupancy_octree->search(test_key, search_depth);
         // do not add frontier or occupied nodes
-        if (oc_node == NULL || occupancy_octree->isNodeOccupied(oc_node) || search_planning::hasNodeUnknownChildren(oc_node, occupancy_octree, search_depth)) {
+        if (oc_node == NULL || occupancy_octree->isNodeOccupied(oc_node) || spheremap_server::hasNodeUnknownChildren(oc_node, occupancy_octree, search_depth)) {
           is_node_border = true;
           continue;
         }
@@ -1530,7 +1530,7 @@ int SegmentOcTree::expandSegment(int seg_id, float max_radius, float compactness
       deltapoints.push_back(occupancy_octree->keyToCoord(segments[seg_index].border_keys[k], 14) - segments[seg_index].center);
     }
     /* SET NEW BLOCK COORDINATES */
-    search_planning::calculateBlockParamsForSegment(&(segments[seg_index]), deltapoints);
+    spheremap_server::calculateBlockParamsForSegment(&(segments[seg_index]), deltapoints);
 
     setPortalsOfSegmentMergeReadiness(seg_id, true);
   }
@@ -1773,7 +1773,7 @@ void SegmentOcTree::updateNavCenterForSegment(int seg_id) {
     return;
   }
   /* IF CENTER IS SAFE, SET NAV_CENTER = CENTER */
-  if (search_planning::isPointSafe(segments[seg_index].center, 0.8, occupancy_octree)) {
+  if (spheremap_server::isPointSafe(segments[seg_index].center, 0.8, occupancy_octree)) {
     segments[seg_index].nav_center         = segments[seg_index].center;
     segments[seg_index].nav_center_is_safe = true;
     /* ROS_INFO("nav_center set to center"); */
@@ -1786,11 +1786,11 @@ void SegmentOcTree::updateNavCenterForSegment(int seg_id) {
     float radius = maxdist * ((double)i) / 10;
     /* ROS_INFO("nav_center searching in radius %f around center", radius); */
     for (int k = 0; k < 15; k++) {
-      octomap::point3d test_point = segments[seg_index].center + search_planning::getRandomPointInSphere(radius);
+      octomap::point3d test_point = segments[seg_index].center + spheremap_server::getRandomPointInSphere(radius);
       if (this->search(test_point) == NULL || this->search(test_point)->getSegmentID() != seg_index) {
         continue;
       }
-      if (!search_planning::isPointSafe(test_point, 0.8, occupancy_octree)) {
+      if (!spheremap_server::isPointSafe(test_point, 0.8, occupancy_octree)) {
         continue;
       }
       segments[seg_index].nav_center         = test_point;
@@ -1799,7 +1799,7 @@ void SegmentOcTree::updateNavCenterForSegment(int seg_id) {
     }
   }
   /* IF CURRENT NAV CENTER IS OK, DONT CHANGE IT */
-  if (search_planning::isPointSafe(segments[seg_index].nav_center, 0.8, occupancy_octree)) {
+  if (spheremap_server::isPointSafe(segments[seg_index].nav_center, 0.8, occupancy_octree)) {
     return;
   }
   segments[seg_index].nav_center         = segments[seg_index].center;
@@ -2037,12 +2037,12 @@ bool SegmentOcTree::tryMerge(int id1, int id2, float compactness_index, float ma
   if (s1->bounding_sphere_radius < 5) {
     border_points_filtered = border_points1;
   } else {
-    search_planning::filterPoints(&border_points1, &border_points_filtered, s1->bounding_sphere_radius / 4);
+    spheremap_server::filterPoints(&border_points1, &border_points_filtered, s1->bounding_sphere_radius / 4);
   }
   if (s2->bounding_sphere_radius < 5) {
     border_points_filtered2 = border_points2;
   } else {
-    search_planning::filterPoints(&border_points2, &border_points_filtered2, s2->bounding_sphere_radius / 4);
+    spheremap_server::filterPoints(&border_points2, &border_points_filtered2, s2->bounding_sphere_radius / 4);
   }
 
   border_points_filtered.insert(border_points_filtered.end(), border_points_filtered2.begin(), border_points_filtered2.end());
@@ -2050,7 +2050,7 @@ bool SegmentOcTree::tryMerge(int id1, int id2, float compactness_index, float ma
 
   /* GET PCA OF NEW BORDER KEYS */
   if (compactness_index > 0) {
-    pca_res = search_planning::getPCA3D(border_points_filtered);
+    pca_res = spheremap_server::getPCA3D(border_points_filtered);
     /* GET PCA ANALYSIS AND CHECK IF THE RATIO OF FIRST TWO HALFAXES IS OK */
     float            halfaxis1_projection = 0;
     float            halfaxis2_projection = 0;
@@ -2236,7 +2236,7 @@ bool SegmentOcTree::tryMerge(int id1, int id2, float compactness_index, float ma
   s1->bounding_sphere_radius  = new_bounding_sphere_radius;
   s1->has_merged_atleast_once = true;
 
-  search_planning::calculateBlockParamsForSegment(s1, border_points_relative);
+  spheremap_server::calculateBlockParamsForSegment(s1, border_points_relative);
 
   updateConnectionsForSegment(id1);
   updateNavCenterForSegment(id1);

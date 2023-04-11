@@ -6,7 +6,7 @@
   <arg name="use_staging_area_wall" default="true" />
 
   <!-- print used commit -->
-  <!-- <arg name="package_name" default="search_planning" /> -->
+  <!-- <arg name="package_name" default="spheremap_server" /> -->
   <!-- <group ns="$(arg UAV_NAME)"> -->
   <!--   <node name="$(arg package_name)_commit" pkg="subt_virtual_launch" type="print_commit.sh" args="$(arg package_name)" output="screen"/> -->
   <!-- </group> -->
@@ -36,16 +36,16 @@
   <arg     if="$(arg standalone)" name="nodelet_manager" value=""/>
 
     <!-- loading configs specific for each uav_name -->
-  <arg name="uav_config_file" value="$(find search_planning)/config/$(arg UAV_NAME).yaml" />
+  <arg name="uav_config_file" value="$(find spheremap_server)/config/$(arg UAV_NAME).yaml" />
 
   <group ns="$(arg UAV_NAME)">
 
     <!-- launch the nodelet -->
-    <node pkg="nodelet" type="nodelet" name="search_planning_mapper" args="$(arg nodelet) search_planning/MappingNodelet $(arg nodelet_manager)" launch-prefix="$(arg launch_prefix_debug)" output="screen">
-    <!-- <node pkg="nodelet" type="nodelet" name="search_planning_mapper" args="$(arg nodelet) search_planning/PlanningNodelet $(arg nodelet_manager)" launch-prefix="" output="screen"> -->
-    <!-- <node pkg="nodelet" type="nodelet" name="search_planning_mapper" args="$(arg nodelet) search_planning/PlanningNodelet $(arg nodelet_manager)" launch-prefix="debug_roslaunch" output="screen"> -->
+    <node pkg="nodelet" type="nodelet" name="spheremap_server_mapper" args="$(arg nodelet) spheremap_server/MappingNodelet $(arg nodelet_manager)" launch-prefix="$(arg launch_prefix_debug)" output="screen">
+    <!-- <node pkg="nodelet" type="nodelet" name="spheremap_server_mapper" args="$(arg nodelet) spheremap_server/PlanningNodelet $(arg nodelet_manager)" launch-prefix="" output="screen"> -->
+    <!-- <node pkg="nodelet" type="nodelet" name="spheremap_server_mapper" args="$(arg nodelet) spheremap_server/PlanningNodelet $(arg nodelet_manager)" launch-prefix="debug_roslaunch" output="screen"> -->
 
-      <rosparam file="$(find search_planning)/config/$(arg config_name)" />
+      <rosparam file="$(find spheremap_server)/config/$(arg config_name)" />
 
       <param name="uav_name" type="string" value="$(arg UAV_NAME)" />
       <param name="map_frame" type="string" value="$(arg map_frame)"/>
@@ -57,24 +57,24 @@
       <param name="baselink_frame" type="string" value="$(arg baselink_frame)" />
 
         <!-- Publishers -->
-      <remap from="~frontier_clusters" to="search_planning_vis/frontier_clusters" />
+      <remap from="~frontier_clusters" to="spheremap_server_vis/frontier_clusters" />
 
-      <remap from="~facetmap_detailed" to="search_planning_vis/facetmap/detailed" />
-      <remap from="~facetmap_pointcloud" to="search_planning_vis/facetmap/pointcloud" />
+      <remap from="~facetmap_detailed" to="spheremap_server_vis/facetmap/detailed" />
+      <remap from="~facetmap_pointcloud" to="spheremap_server_vis/facetmap/pointcloud" />
 
-      <remap from="~spheremap_spheres" to="search_planning_vis/spheremap/spheres" />
-      <remap from="~spheremap_graph" to="search_planning_vis/spheremap/graph" />
-      <remap from="~spheremap_topology" to="search_planning_vis/spheremap/topology" />
-      <remap from="~spheremap_navigation" to="search_planning_vis/spheremap/navigation" />
-      <remap from="~spheremap_debug" to="search_planning_vis/spheremap/debug" />
+      <remap from="~spheremap_spheres" to="spheremap_server_vis/spheremap/spheres" />
+      <remap from="~spheremap_graph" to="spheremap_server_vis/spheremap/graph" />
+      <remap from="~spheremap_topology" to="spheremap_server_vis/spheremap/topology" />
+      <remap from="~spheremap_navigation" to="spheremap_server_vis/spheremap/navigation" />
+      <remap from="~spheremap_debug" to="spheremap_server_vis/spheremap/debug" />
 
-      <remap from="~potential_goals_local" to="search_planning_vis/planning/potential_goals_local" />
-      <remap from="~potential_goals_global" to="search_planning_vis/planning/potential_goals_global" />
+      <remap from="~potential_goals_local" to="spheremap_server_vis/planning/potential_goals_local" />
+      <remap from="~potential_goals_global" to="spheremap_server_vis/planning/potential_goals_global" />
 
-      <remap from="~sent_segmap_visualization" to="search_planning_vis/cooperation/sent_segmap_visualization" />
-      <remap from="~received_topology_data" to="search_planning_vis/cooperation/received_topology_data" />
-      <remap from="~received_robot_state_data" to="search_planning_vis/cooperation/received_robot_state_data" />
-      <remap from="~received_operator_commands_markers" to="search_planning_vis/cooperation/received_operator_commands_markers" />
+      <remap from="~sent_segmap_visualization" to="spheremap_server_vis/cooperation/sent_segmap_visualization" />
+      <remap from="~received_topology_data" to="spheremap_server_vis/cooperation/received_topology_data" />
+      <remap from="~received_robot_state_data" to="spheremap_server_vis/cooperation/received_robot_state_data" />
+      <remap from="~received_operator_commands_markers" to="spheremap_server_vis/cooperation/received_operator_commands_markers" />
 
         <!-- Subscribers -->
       <remap from="~control_manager_diag_in" to="/$(arg UAV_NAME)/control_manager/diagnostics" />
@@ -89,16 +89,16 @@
       <remap from="~control_error_in" to="/$(arg UAV_NAME)/control_manager/control_error" />
 
         <!-- Services -->
-      <remap from="~planning_init" to="/$(arg UAV_NAME)/search_planning/planning_init" />
-      <remap from="~automatic_exploration" to="/$(arg UAV_NAME)/search_planning/start_exploration" />
-      <remap from="~set_narrow_parameters" to="/$(arg UAV_NAME)/search_planning/set_narrow_params" />
-      <remap from="~set_preferred_flight_angle_in" to="/$(arg UAV_NAME)/search_planning/set_preferred_flight_angle" />
-      <remap from="~set_desired_velocity_in" to="/$(arg UAV_NAME)/search_planning/set_desired_velocity" />
+      <remap from="~planning_init" to="/$(arg UAV_NAME)/spheremap_server/planning_init" />
+      <remap from="~automatic_exploration" to="/$(arg UAV_NAME)/spheremap_server/start_exploration" />
+      <remap from="~set_narrow_parameters" to="/$(arg UAV_NAME)/spheremap_server/set_narrow_params" />
+      <remap from="~set_preferred_flight_angle_in" to="/$(arg UAV_NAME)/spheremap_server/set_preferred_flight_angle" />
+      <remap from="~set_desired_velocity_in" to="/$(arg UAV_NAME)/spheremap_server/set_desired_velocity" />
       <remap from="~stop_trajectory_following" to="/$(arg UAV_NAME)/control_manager/stop_trajectory_tracking" />
 
-      <remap from="~srv_graph_insert_comm_node_in" to="/$(arg UAV_NAME)/search_planning/graph/insert_comm_node" />
-      <remap from="~srv_graph_insert_comm_nodes_in" to="/$(arg UAV_NAME)/search_planning/graph/insert_comm_nodes" />
-      <remap from="~srv_graph_invalidate_comm_node_in" to="/$(arg UAV_NAME)/search_planning/graph/invalidate_comm_node" />
+      <remap from="~srv_graph_insert_comm_node_in" to="/$(arg UAV_NAME)/spheremap_server/graph/insert_comm_node" />
+      <remap from="~srv_graph_insert_comm_nodes_in" to="/$(arg UAV_NAME)/spheremap_server/graph/insert_comm_nodes" />
+      <remap from="~srv_graph_invalidate_comm_node_in" to="/$(arg UAV_NAME)/spheremap_server/graph/invalidate_comm_node" />
 
     </node>
 

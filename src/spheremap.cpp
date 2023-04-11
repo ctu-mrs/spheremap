@@ -1,12 +1,12 @@
-#include <search_planning/mapper.h>
-#include <search_planning/utility_functions.h>
+#include <spheremap_server/mapper.h>
+#include <spheremap_server/utility_functions.h>
 /* every nodelet must include macros which export the class as a nodelet plugin */
 #include <pluginlib/class_list_macros.h>
 #include <algorithm>
 #include <random>
-#include <search_planning/spheremap.h>
+#include <spheremap_server/spheremap.h>
 
-namespace search_planning
+namespace spheremap_server
 {
 
 /* SphereMap //{ */
@@ -1708,7 +1708,7 @@ uint SphereMap::tryMergingSegments(std::map<uint, SphereMapSegment>::iterator it
     }
   }
   /* TEST VISIBILITY */
-  /* if (!search_planning::arePointsMutuallyVisible2(it1->second.center, it2->second.center, occupancy_octree_)) { */
+  /* if (!spheremap_server::arePointsMutuallyVisible2(it1->second.center, it2->second.center, occupancy_octree_)) { */
   /*   return 0; */
   /* } */
 
@@ -2858,4 +2858,4 @@ bool reconstructSphereMapDetailedPath(SphereMapPath& res, SphereMapDetailedAstar
 }
 //}
 
-}  // namespace search_planning
+}  // namespace spheremap_server

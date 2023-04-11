@@ -17,9 +17,9 @@
 #include <octomap/octomap.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include <search_planning/mapper.h>
+#include <spheremap_server/mapper.h>
 
-namespace search_planning
+namespace spheremap_server
 {
 
 
@@ -33,6 +33,6 @@ private:
   ExplorationMapper * mapper_;
 };
 
-}  // namespace search_planning
+}  // namespace spheremap_server
 
 #endif

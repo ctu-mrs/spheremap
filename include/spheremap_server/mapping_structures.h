@@ -16,11 +16,11 @@
 #include <octomap_msgs/conversions.h>
 #include <octomap/octomap.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <search_planning/pcl_map.h>
+#include <spheremap_server/pcl_map.h>
 
-#include <search_planning/SegmapMsg.h>
+#include <spheremap_server/SegmapMsg.h>
 
-namespace search_planning
+namespace spheremap_server
 {
 struct CameraInfo
 {
@@ -142,7 +142,7 @@ struct TopologyMappingSettings
 };
 //}
 
-}  // namespace search_planning
+}  // namespace spheremap_server
 
 namespace octomap
 {
@@ -274,8 +274,8 @@ struct SurfaceData
 
 struct SurfaceOcNodeStruct
 {
-  std::vector<search_planning::SurfaceNode> explored;
-  std::vector<search_planning::SurfaceNode> unexplored;
+  std::vector<spheremap_server::SurfaceNode> explored;
+  std::vector<spheremap_server::SurfaceNode> unexplored;
 };
 
 struct SurfaceNodeKey
@@ -300,11 +300,11 @@ public:
     value.unexplored = {};
   }
 
-  std::vector<search_planning::SurfaceNode>* getExploredPtr() {
+  std::vector<spheremap_server::SurfaceNode>* getExploredPtr() {
     return &value.explored;
   }
 
-  std::vector<search_planning::SurfaceNode>* getUnexploredPtr() {
+  std::vector<spheremap_server::SurfaceNode>* getUnexploredPtr() {
     return &value.unexplored;
   }
 
@@ -346,7 +346,7 @@ public:
     return res;
   }
 
-  std::vector<OcTreeKey> getKeysInBBX(int depth, search_planning::BoundingBox bbx) {
+  std::vector<OcTreeKey> getKeysInBBX(int depth, spheremap_server::BoundingBox bbx) {
     return this->getKeysInBBX(depth, bbx.x1, bbx.x2, bbx.y1, bbx.y2, bbx.z1, bbx.z2);
   }
 
@@ -371,7 +371,7 @@ public:
     return res;
   }
 
-  std::vector<OcTreeKey> getKeysWithUnknownNodesInBBX(int depth, search_planning::BoundingBox bbx) {
+  std::vector<OcTreeKey> getKeysWithUnknownNodesInBBX(int depth, spheremap_server::BoundingBox bbx) {
     return this->getKeysWithUnknownNodesInBBX(depth, bbx.x1, bbx.x2, bbx.y1, bbx.y2, bbx.z1, bbx.z2);
   }
 
@@ -553,10 +553,10 @@ public:
   std::vector<SegmentPortal>            portals;
   int                                   last_segment_id;
   float                                 voxel_min_safe_distance_;
-  search_planning::StagingAreaSettings* staging_area_settings_ptr_;
+  spheremap_server::StagingAreaSettings* staging_area_settings_ptr_;
 
   std::shared_ptr<octomap::OcTree>        occupancy_octree = NULL;
-  std::shared_ptr<search_planning::PCLMap> pcl_map_ptr      = NULL;
+  std::shared_ptr<spheremap_server::PCLMap> pcl_map_ptr      = NULL;
 
   std::vector<octomap::point3d> debug_points_;
 
@@ -655,7 +655,7 @@ public:
 };  // namespace octomap
 
 
-namespace search_planning
+namespace spheremap_server
 {
 
 /* Ellipsoid definition //{*/
@@ -841,6 +841,6 @@ public:
 
 
 //}
-};  // namespace search_planning
+};  // namespace spheremap_server
 
 #endif

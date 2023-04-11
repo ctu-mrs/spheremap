@@ -15,10 +15,10 @@
 #include <octomap_msgs/conversions.h>
 #include <octomap/octomap.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <search_planning/pcl_map.h>
+#include <spheremap_server/pcl_map.h>
 
-#include <search_planning/SegmapMsg.h>
-#include <search_planning/mapping_structures.h>
+#include <spheremap_server/SegmapMsg.h>
+#include <spheremap_server/mapping_structures.h>
 
 namespace octomap
 {
@@ -115,7 +115,7 @@ public:
 
 };  // namespace octomap
 
-namespace search_planning
+namespace spheremap_server
 {
 
 /* SphereMapPath //{ */
@@ -545,6 +545,6 @@ public:
 bool reconstructSphereMapDetailedPath(SphereMapPath& res, SphereMapDetailedAstarNode goal_node);
 //}
 
-};  // namespace search_planning
+};  // namespace spheremap_server
 
 #endif

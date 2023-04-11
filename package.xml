@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
 
-  <name>search_planning</name>
+  <name>spheremap_server</name>
   <version>0.0.1</version>
   <description>maps exploration</description>
 

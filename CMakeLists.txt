@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(search_planning)
+project(spheremap_server)
 
 # Override CXX flags inherited from workspace, if precompiled PCL binaries from debian repos are used
 if (DEFINED ENV{PCL_CROSS_COMPILATION})
@@ -53,7 +53,7 @@ generate_messages(
 # export the dependencis of this package for who ever depends on us
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES SearchPlanning
+  LIBRARIES SpheremapServer 
   CATKIN_DEPENDS roscpp std_msgs geometry_msgs #darpa_msgs message_runtime darpa_planning_lib
   )
 
@@ -65,7 +65,7 @@ include_directories(
   )
 
 # Declare a C++ library
-add_library(SearchPlanning src/mapper.cpp
+add_library(SpheremapServer src/mapper.cpp
   src/pcl_map.cpp
   src/mapper.cpp
   # src/planning_nodelet.cpp
@@ -76,7 +76,7 @@ add_library(SearchPlanning src/mapper.cpp
   src/spheremap.cpp
   )
 
-target_link_libraries(SearchPlanning
+target_link_libraries(SpheremapServer 
   ${catkin_LIBRARIES}
   ${OCTOMAP_LIBRARIES}
   )

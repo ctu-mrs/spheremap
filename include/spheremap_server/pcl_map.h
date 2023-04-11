@@ -13,7 +13,7 @@
 #include <octomap_msgs/conversions.h>
 #include <octomap_msgs/Octomap.h>
 
-namespace search_planning
+namespace spheremap_server
 {
 
 /**

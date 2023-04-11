@@ -1,8 +1,8 @@
-#include <search_planning/utility_functions.h>
+#include <spheremap_server/utility_functions.h>
 /* every nodelet must include macros which export the class as a nodelet plugin */
 #include <pluginlib/class_list_macros.h>
 
-namespace search_planning
+namespace spheremap_server
 {
 
 /* rotationMatrixToQuaternion() //{ */
@@ -409,7 +409,7 @@ std::vector<pcl::PointXYZ> octomapToPointcloud(std::shared_ptr<octomap::OcTree> 
       output_pcl.push_back(point);
     }
     /* //ROS_INFO("[%s]: x = %d, y = %d, z = %d", ros::this_node::getName().c_str(), x, y, z); */
-  }  // namespace search_planning
+  }  // namespace spheremap_server
   return output_pcl;
 }
 //}
@@ -1920,8 +1920,8 @@ std::pair<float, float> calculateBestFitAlphaBeta(std::vector<octomap::point3d>&
 }
 
 void calculateBlockParamsForSegment(octomap::Segment* seg_ptr, std::vector<octomap::point3d>& deltapoints) {
-  std::pair<float, float>       block_angles = search_planning::calculateBestFitAlphaBeta(deltapoints);
-  std::vector<octomap::point3d> block_dirs   = search_planning::blockAnglesToDirections(block_angles.first, block_angles.second);
+  std::pair<float, float>       block_angles = spheremap_server::calculateBestFitAlphaBeta(deltapoints);
+  std::vector<octomap::point3d> block_dirs   = spheremap_server::blockAnglesToDirections(block_angles.first, block_angles.second);
   float                         aproj, bproj, cproj;
   float                         block_a = 0;
   float                         block_b = 0;
@@ -1949,8 +1949,8 @@ void calculateBlockParamsForSegment(octomap::Segment* seg_ptr, std::vector<octom
 }
 
 void calculateBlockParamsForSegment(std::map<uint, SphereMapSegment>::iterator seg_ptr, std::vector<octomap::point3d>& deltapoints, std::vector<float>& radii) {
-  std::pair<float, float>       block_angles = search_planning::calculateBestFitAlphaBeta(deltapoints, radii);
-  std::vector<octomap::point3d> block_dirs   = search_planning::blockAnglesToDirections(block_angles.first, block_angles.second);
+  std::pair<float, float>       block_angles = spheremap_server::calculateBestFitAlphaBeta(deltapoints, radii);
+  std::vector<octomap::point3d> block_dirs   = spheremap_server::blockAnglesToDirections(block_angles.first, block_angles.second);
   float                         aproj, bproj, cproj;
   float                         block_a = 0;
   float                         block_b = 0;
@@ -1978,7 +1978,7 @@ void calculateBlockParamsForSegment(std::map<uint, SphereMapSegment>::iterator s
   seg_ptr->second.block_dirs  = block_dirs;  // cache this for faster calculation
 }
 
-float getObstacleDist(octomap::point3d& test_point, std::shared_ptr<search_planning::PCLMap>& pclmap) {
+float getObstacleDist(octomap::point3d& test_point, std::shared_ptr<spheremap_server::PCLMap>& pclmap) {
   pcl::PointXYZ pcl_point;
   pcl_point.x = test_point.x();
   pcl_point.y = test_point.y();
@@ -2035,4 +2035,4 @@ geometry_msgs::Point octopoint2geometry(octomap::point3d pos) {
   return pos2;
 }
 
-}  // namespace search_planning
+}  // namespace spheremap_server

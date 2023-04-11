@@ -16,10 +16,10 @@
 #include <octomap/octomap.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include <search_planning/mapping_structures.h>
-#include <search_planning/spheremap.h>
+#include <spheremap_server/mapping_structures.h>
+#include <spheremap_server/spheremap.h>
 
-namespace search_planning
+namespace spheremap_server
 {
 class StopWatch {
 public:
@@ -144,6 +144,6 @@ bool                 arePointsMutuallyVisible2(octomap::point3d p1, octomap::poi
 bool                 isNear(std::vector<octomap::point3d> points, octomap::point3d, float maxdist);
 std::optional<float> getNearestPointDist(std::vector<octomap::point3d> points, octomap::point3d, float maxdist);
 geometry_msgs::Point octopoint2geometry(octomap::point3d);
-}  // namespace search_planning
+}  // namespace spheremap_server
 
 #endif

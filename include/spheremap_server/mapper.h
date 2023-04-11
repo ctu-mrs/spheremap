@@ -16,15 +16,15 @@
 #include <octomap/octomap.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include <search_planning/GetSphereMapPathSrv.h>
-#include <search_planning/SegmapMsg.h>
+#include <spheremap_server/GetSphereMapPathSrv.h>
+#include <spheremap_server/SegmapMsg.h>
 
-#include <search_planning/mapping_structures.h>
-#include <search_planning/spheremap.h>
+#include <spheremap_server/mapping_structures.h>
+#include <spheremap_server/spheremap.h>
 
 #include <sensor_msgs/PointCloud2.h>
 
-namespace search_planning
+namespace spheremap_server
 {
 class ExplorationMapper {
 public:
@@ -315,6 +315,6 @@ public:
 };
 
 
-}  // namespace search_planning
+}  // namespace spheremap_server
 
 #endif

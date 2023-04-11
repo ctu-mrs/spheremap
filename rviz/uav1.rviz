@@ -339,7 +339,7 @@ Visualization Manager:
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /uav1/exploration_mapper/octomap_vis_array
-      Name: Map - general search_planning markers
+      Name: Map - general spheremap_server markers
       Namespaces:
         astar_waypoints: true
         current_surface_point_path: true

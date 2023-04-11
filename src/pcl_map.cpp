@@ -1,7 +1,7 @@
 #include <ros/ros.h>
-#include <search_planning/pcl_map.h>
+#include <spheremap_server/pcl_map.h>
 
-using namespace search_planning;
+using namespace spheremap_server;
 
 #define RESOLUTION 0.1f
 
