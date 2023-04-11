@@ -1,0 +1,37 @@
+# SETTINGS FOR SPHEREMAP PLANNING
+spheremap_min_safe_dist: 0.8 # the distance under which planning does not go, and spheres are deleted
+spheremap_fully_safe_dist: 3 # the distance after which no penalty is added to sphere-sphere transition due to being risky
+
+# SETTINGS FOR SENDING LTV-MAP MARKERS OR FRAGMENTS
+ltvmap_sending_interval: 2
+# Fragment sending is disabled by default. Enable if you decide to do something with received LTV-Maps (adding
+# information or merging them or using them for navigation between UAVs etc.). Also note that 
+# the fragments are not transformed to a shared frame now and that needs to be implemented.
+enable_ltvmap_fragment_sending: false
+ltvmap_sending_max_data_bytes: 500
+rate_topology_msg_buffer_emptying: 10
+# The markers can be used as a very lightweight visualization of the topology and volume explored by the UAV
+# (e.g. when you dont want to send a whole octomap for visualization).
+enable_ltvmap_markers_sending: true
+
+# SETTINGS OF SPHEREMAP INCREMENTAL SEGMENTATION
+# you can play around with it, but these were found to be good for the incremental segmentation of SphereMap
+topology_mapping:
+  enabled: true
+  max_segment_radius: 5
+  compactness_delta: 2
+  convexity_threshold: 0
+  merging:
+    enabled: true
+    compactness_factor: -1
+    convexity_threshold: 0.04
+    max_segment_radius: 10
+  num_max_grown: 10
+  num_rays_for_growth: 200
+  growth_raydist: 40
+  raycast_growing_safe_distance: 0.8
+  num_expand_tries: 30
+  num_merge_tries: 25
+  voxel_min_safe_distance: 0.60
+  segmap_default_depth_offset: 2
+

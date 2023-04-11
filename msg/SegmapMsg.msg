@@ -1,0 +1,12 @@
+std_msgs/Header header
+geometry_msgs/Vector3[] segment_positions
+uint8[] shape_data
+uint8[] segment_surface_coverage
+uint16[] portal_ids1
+uint16[] portal_ids2
+geometry_msgs/Vector3[] frontier_group_positions
+uint16[] frontier_group_seg_ids
+uint8[] frontier_group_values
+uint32 message_index
+uint16 fragment_index
+uint16 num_total_fragments

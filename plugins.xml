@@ -1,0 +1,8 @@
+<library path="lib/libSearchPlanning">
+  <class name="search_planning/PlanningNodelet" type="search_planning::PlanningNodelet" base_class_type="nodelet::Nodelet">
+    <description>Planning and mapping nodelet</description>
+  </class>
+  <class name="search_planning/MappingNodelet" type="search_planning::MappingNodelet" base_class_type="nodelet::Nodelet">
+    <description>Only mapping nodelet</description>
+  </class>
+</library>
