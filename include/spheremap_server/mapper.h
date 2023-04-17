@@ -41,6 +41,7 @@ public:
   float absolute_max_map_update_dist         = 70;
   bool  hires_mode_                          = false;
   float absolute_max_map_update_dist_highres = 40;
+  float max_graph_dist_for_spheremap_planning_ = 10;
 
   bool        use_global_search_bbx_;
   BoundingBox global_search_bbx_;

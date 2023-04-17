@@ -41,7 +41,9 @@ void ExplorationMapper::initialize(ros::NodeHandle* nh) {
   nh->getParam("spheremap_fully_safe_dist", spheremap_fully_safe_dist_);
   nh->getParam("enable_ltvmap_fragment_sending", enable_sending_ltvmap_fragments_);
   nh->getParam("enable_ltvmap_markers_sending", enable_sending_ltvmap_markers_);
-
+  nh->getParam("max_graph_dist_for_spheremap_planning", max_graph_dist_for_spheremap_planning_);
+  nh->getParam("spheremap_update_box_size", absolute_max_map_update_dist);
+  nh->getParam("spheremap_update_box_size_hires", absolute_max_map_update_dist_highres);
 
   /* SENDING OF FACETMAP DATA */
   rate_timer_publish_markers_              = 1;
@@ -218,10 +220,9 @@ bool ExplorationMapper::callbackGetSphereMapPathSrv(GetSphereMapPathSrv::Request
     std::scoped_lock lock(mutex_spheremap_);
 
     // TODO this to parameter
-    float max_graph_dist = 10;
-    path_comp_res = spheremap_->computePathsToGoalsWithConnectingToGraph(start_pos_spheremap_frame, max_graph_dist, {goal_pos_spheremap_frame}, max_graph_dist,
-                                                                         true, !req.ignore_precomputed_paths);
-    ROS_INFO("p");
+    path_comp_res =
+        spheremap_->computePathsToGoalsWithConnectingToGraph(start_pos_spheremap_frame, max_graph_dist_for_spheremap_planning_, {goal_pos_spheremap_frame},
+                                                             max_graph_dist_for_spheremap_planning_, true, !req.ignore_precomputed_paths);
   }
   if (!path_comp_res || path_comp_res.value().size() == 0 || path_comp_res.value()[0].positions.size() == 0) {
     resp.message = "could not find path!";
@@ -753,7 +754,7 @@ void ExplorationMapper::callbackTimerUpdateTopologyMap(const ros::TimerEvent& te
   /* mutex_cached_spheremap_.unlock(); */
   if (!navigation_priority_flag_) {
     /* UPDATE MAX UPDATE BOX SIZE */
-    spheremap_->max_update_box_size_ = hires_mode_ ? absolute_max_map_update_dist_highres - 5 : absolute_max_map_update_dist - 5;
+    spheremap_->max_update_box_size_ = hires_mode_ ? absolute_max_map_update_dist_highres : absolute_max_map_update_dist;
     spheremap_->update(current_position_, current_heading_, getOccupancyOcTreeSharedPtr(), getPCLMapSharedPtr());
   }
   mutex_spheremap_.unlock();
@@ -807,11 +808,12 @@ void ExplorationMapper::callbackTimerCalculateKdtree(const ros::TimerEvent& te) 
   /* ROS_INFO("[SphereMap-kDtree]: occupancy octree resolution: %f", occupancy_octree->getResolution()); */
   if (occupancy_octree->getResolution() < 0.18) {
     hires_mode_ = true;
-    /* ROS_INFO("[SphereMap-kDtree]: high resolution mode activated!"); */
+    ROS_INFO("[SphereMap-kDtree]: High resolution octomap detected - only doing spheremap update in smaller bbx of %f m instead of %f m",
+             absolute_max_map_update_dist_highres, absolute_max_map_update_dist);
   } else {
     hires_mode_ = false;
   }
-  BoundingBox generation_bbx(hires_mode_ ? absolute_max_map_update_dist_highres + 10 : absolute_max_map_update_dist + 10, current_position_);
+  BoundingBox generation_bbx(hires_mode_ ? absolute_max_map_update_dist_highres + 15 : absolute_max_map_update_dist + 15, current_position_);
 
   occupancy_octree_ptr_mutex_.lock();
   std::vector<pcl::PointXYZ> pcl_points = spheremap_server::octomapToPointcloud(occupancy_octree, generation_bbx);
@@ -965,7 +967,7 @@ void ExplorationMapper::generateFrontierNodes(std::shared_ptr<octomap::OcTree> o
     /* bbx_start_pos = octomap::point3d(x, y, z); */
     /* occupancy_octree->getMetricMax(x, y, z); */
     /* bbx_end_pos = octomap::point3d(x, y, z); */
-    bbx           = BoundingBox(hires_mode_ ? absolute_max_map_update_dist_highres + 10 : absolute_max_map_update_dist + 10, current_position_);
+    bbx           = BoundingBox(hires_mode_ ? absolute_max_map_update_dist_highres + 15 : absolute_max_map_update_dist + 15, current_position_);
     bbx_start_pos = octomap::point3d(bbx.x1, bbx.y1, bbx.z1);
     bbx_end_pos   = octomap::point3d(bbx.x2, bbx.y2, bbx.z2);
   } else {
