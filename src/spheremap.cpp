@@ -2208,7 +2208,7 @@ SphereMapPath SphereMap::computePath(uint start_seg_id, octomap::point3d start_p
 
       if (interportal_min_safedist < planning_base_safe_dist) {
         float safety      = fmin(((interportal_min_safedist - planning_min_safe_dist) / (planning_base_safe_dist - planning_min_safe_dist)), 1);
-        safety_cost_bonus = 100 + 100 * pow(1 - safety, 2);
+        safety_cost_bonus = spheremap_planning_safety_bias_   + spheremap_planning_safety_weight_  * pow(1 - safety, 2);
       }
 
       /* CREATE NEW ASTAR NODE AND STORE TO FRONTIER*/
@@ -2506,9 +2506,9 @@ SphereMapPath SphereMap::computeDetailedPathInSegment(octomap::OcTreeKey start_k
 
       float safety_cost_bonus = 0;
       if (adj_node_ptr->valuePtr()->radius < planning_base_safe_dist) {
-        safety_cost_bonus = 200 + 200 * (1 - ((adj_node_ptr->valuePtr()->radius - min_safe_dist) / (base_safe_dist - min_safe_dist)));
+        /* safety_cost_bonus = 200 + 200 * (1 - ((adj_node_ptr->valuePtr()->radius - min_safe_dist) / (base_safe_dist - min_safe_dist))); */
         float safety      = fmin(((adj_node_ptr->valuePtr()->radius - planning_min_safe_dist) / (planning_base_safe_dist - planning_min_safe_dist)), 1);
-        safety_cost_bonus = 20 + 50 * pow((1 - safety), 2);
+        safety_cost_bonus = spheremap_planning_safety_bias_  + spheremap_planning_safety_weight_ * pow((1 - safety), 2);
       }
       float g_cost = (expanded.pos - adj_node_ptr->valuePtr()->pos).norm() + safety_cost_bonus;
       float h_cost = (adj_node_ptr->valuePtr()->pos - goal_pos).norm();
