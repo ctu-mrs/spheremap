@@ -44,6 +44,8 @@ void ExplorationMapper::initialize(ros::NodeHandle* nh) {
   nh->getParam("max_graph_dist_for_spheremap_planning", max_graph_dist_for_spheremap_planning_);
   nh->getParam("spheremap_update_box_size", absolute_max_map_update_dist);
   nh->getParam("spheremap_update_box_size_hires", absolute_max_map_update_dist_highres);
+  nh->getParam("spheremap_planning_safety_bias", spheremap_planning_safety_bias_);
+  nh->getParam("spheremap_planning_safety_weight", spheremap_planning_safety_weight_);
 
   /* SENDING OF FACETMAP DATA */
   rate_timer_publish_markers_              = 1;
@@ -151,6 +153,8 @@ void ExplorationMapper::initialize(ros::NodeHandle* nh) {
   spheremap_ =
       std::shared_ptr<SphereMap>(new SphereMap(spheremap_min_safe_dist_, spheremap_fully_safe_dist_, topology_mapping_settings_, &staging_area_settings_));
   spheremap_->max_update_box_size_ = absolute_max_map_update_dist - 5;  // redundant
+  spheremap_->spheremap_planning_safety_bias_ = spheremap_planning_safety_bias_;
+  spheremap_->spheremap_planning_safety_weight_ = spheremap_planning_safety_weight_;
 
   visited_positions_map_ =
       std::shared_ptr<SphereMap>(new SphereMap(spheremap_min_safe_dist_, spheremap_fully_safe_dist_, topology_mapping_settings_, &staging_area_settings_));

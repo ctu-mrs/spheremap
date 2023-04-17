@@ -390,6 +390,8 @@ public:
   }
 
   float max_update_box_size_;
+  float spheremap_planning_safety_bias_ = 0;   
+  float spheremap_planning_safety_weight_ = 0 ;
 
   float planning_min_safe_dist;
   float planning_base_safe_dist;
