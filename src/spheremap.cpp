@@ -524,6 +524,11 @@ void SphereMap::growNodesFull(octomap::point3d current_position_, float box_half
       /*   break; */
       /* } */
 
+      octomap::OcTreeNode* nodeptr = occupancy_octree_->search(sample_point);
+      if(nodeptr==NULL || occupancy_octree_->isNodeOccupied(nodeptr)){
+        break;
+      }
+
       float odist = getObstacleDist(sample_point, pcl_map_ptr);
       if (odist < min_safe_dist) {
         break;
@@ -580,11 +585,13 @@ void SphereMap::growNodesFull(octomap::point3d current_position_, float box_half
   }
 
 
+  bool debug_sampling = false;
   /* std::sort(testpoint_pairs.begin(), testpoint_pairs.end()); */
   for (uint i = 0; i < testpoint_pairs.size(); i++) {
     octomap::point3d sample_point = testpoints[testpoint_pairs[i].second];
     /* FILTER OUT POINTS IN DENY BBX */
     if (generation_deny_bbx.isPointInside(sample_point)) {
+      ROS_INFO_COND(debug_sampling,"a");
       continue;
     }
 
@@ -592,6 +599,7 @@ void SphereMap::growNodesFull(octomap::point3d current_position_, float box_half
     std::vector<octomap::OcTreeKey> ckeys = {};
 
     if (nodes->search(sample_point, 16) != NULL) {
+      ROS_INFO_COND(debug_sampling,"x");
       continue;
     }
 
@@ -604,6 +612,7 @@ void SphereMap::growNodesFull(octomap::point3d current_position_, float box_half
       if (odist < saved_odists[j] - sphere_intersection_reserve && dist2 < pow(fmax(sphere_intersection_reserve, saved_odists[j] / 1.5), 2)) {
         debug_points.push_back(sample_point);
         is_in_map = true;
+        ROS_INFO_COND(debug_sampling,"b");
         break;
       }
       /* if (odist < saved_odists[j] && dist2 < pow(saved_odists[j] - 2 * sphere_intersection_reserve, 2)) { */
@@ -612,6 +621,7 @@ void SphereMap::growNodesFull(octomap::point3d current_position_, float box_half
       /* } */
 
       if (isPinnedBy(dist2, sample_point, saved_positions[j], odist, saved_odists[j])) {
+        ROS_INFO_COND(debug_sampling,"c");
         is_in_map = true;
         break;
       }
@@ -621,6 +631,7 @@ void SphereMap::growNodesFull(octomap::point3d current_position_, float box_half
       }
     }
     if (is_in_map) {
+      ROS_INFO_COND(debug_sampling, "e");
       continue;
     }
 
@@ -647,8 +658,11 @@ void SphereMap::growNodesFull(octomap::point3d current_position_, float box_half
 
 
   time_end = ros::WallTime::now();
-  ROS_INFO("[SphereMap]: expansion time: %f.  testpoints size: %lu, points from raycasting: %lu, points from sampling octomap free voxels: %lu",
-           (time_end - time_start).toSec() * 1000, testpoints.size(), num_sampled_by_raycasts, num_sampled_by_nearness);
+  ROS_INFO(
+      "[SphereMap]: expansion time: %f.  testpoints size: %lu, points from raycasting: %lu, points from sampling octomap free voxels: %lu, tespoints total: "
+      "%lu, added spheres in total: %lu",
+      (time_end - time_start).toSec() * 1000, testpoints.size(), num_sampled_by_raycasts, num_sampled_by_nearness, testpoints.size(),
+      nodes_for_connections_update.size());
   time_start = ros::WallTime::now();
 
   for (uint i = 0; i < nodes_for_connections_update.size(); i++) {
@@ -2208,7 +2222,7 @@ SphereMapPath SphereMap::computePath(uint start_seg_id, octomap::point3d start_p
 
       if (interportal_min_safedist < planning_base_safe_dist) {
         float safety      = fmin(((interportal_min_safedist - planning_min_safe_dist) / (planning_base_safe_dist - planning_min_safe_dist)), 1);
-        safety_cost_bonus = spheremap_planning_safety_bias_   + spheremap_planning_safety_weight_  * pow(1 - safety, 2);
+        safety_cost_bonus = spheremap_planning_safety_bias_ + spheremap_planning_safety_weight_ * pow(1 - safety, 2);
       }
 
       /* CREATE NEW ASTAR NODE AND STORE TO FRONTIER*/
@@ -2508,7 +2522,7 @@ SphereMapPath SphereMap::computeDetailedPathInSegment(octomap::OcTreeKey start_k
       if (adj_node_ptr->valuePtr()->radius < planning_base_safe_dist) {
         /* safety_cost_bonus = 200 + 200 * (1 - ((adj_node_ptr->valuePtr()->radius - min_safe_dist) / (base_safe_dist - min_safe_dist))); */
         float safety      = fmin(((adj_node_ptr->valuePtr()->radius - planning_min_safe_dist) / (planning_base_safe_dist - planning_min_safe_dist)), 1);
-        safety_cost_bonus = spheremap_planning_safety_bias_  + spheremap_planning_safety_weight_ * pow((1 - safety), 2);
+        safety_cost_bonus = spheremap_planning_safety_bias_ + spheremap_planning_safety_weight_ * pow((1 - safety), 2);
       }
       float g_cost = (expanded.pos - adj_node_ptr->valuePtr()->pos).norm() + safety_cost_bonus;
       float h_cost = (adj_node_ptr->valuePtr()->pos - goal_pos).norm();
