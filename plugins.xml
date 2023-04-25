@@ -1,5 +1,5 @@
 <library path="lib/libSpheremapServer">
   <class name="spheremap_server/MappingNodelet" type="spheremap_server::MappingNodelet" base_class_type="nodelet::Nodelet">
-    <description>Only mapping nodelet</description>
+    <description>Mapping and planning SphereMap nodelet</description>
   </class>
 </library>

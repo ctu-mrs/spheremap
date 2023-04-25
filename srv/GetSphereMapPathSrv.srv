@@ -1,9 +1,9 @@
 std_msgs/Header header
-geometry_msgs/Vector3 start
-geometry_msgs/Vector3 goal
+geometry_msgs/Point start
+geometry_msgs/Point goal
 bool ignore_precomputed_paths
 ---
 bool success
 string message
-geometry_msgs/Vector3[] path
+geometry_msgs/Point[] path
 float32[] path_obstacle_distances

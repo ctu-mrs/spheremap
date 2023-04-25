@@ -1,4 +1,4 @@
-#include <geometry_msgs/Vector3.h>
+#include <geometry_msgs/Point.h>
 #include <octomap_msgs/Octomap.h>
 #include <spheremap_server/mapper.h>
 #include <spheremap_server/utility_functions.h>
@@ -247,7 +247,7 @@ bool ExplorationMapper::callbackGetSphereMapPathSrv(GetSphereMapPathSrv::Request
       tf2::Vector3 pointtotransform(respath.positions[i].x(), respath.positions[i].y(), respath.positions[i].z());
       tf2::Vector3 transformed_point = spheremap_to_request_transform * pointtotransform;
 
-      geometry_msgs::Vector3 respoint;
+      geometry_msgs::Point respoint;
       respoint.x = transformed_point.x();
       respoint.y = transformed_point.y();
       respoint.z = transformed_point.z();
