@@ -128,6 +128,7 @@ public:
   float                         length_metres;
   float                         approax_safety;
   float                         min_safedist;
+  float                         total_unsafety;
   bool                          reaches_goal = false;
 
   octomap::point3d original_start;
@@ -390,8 +391,8 @@ public:
   }
 
   float max_update_box_size_;
-  float spheremap_planning_safety_bias_ = 0;   
-  float spheremap_planning_safety_weight_ = 0 ;
+  float spheremap_planning_safety_bias_   = 0;
+  float spheremap_planning_safety_weight_ = 0;
 
   float planning_min_safe_dist;
   float planning_base_safe_dist;
@@ -499,6 +500,10 @@ public:
   SphereMapPath computeDetailedPathInSegment(octomap::OcTreeKey start_key, octomap::OcTreeKey goal_key, float min_odist);
   SphereMapPath computeDetailedPathInSegment(octomap::OcTreeKey start_key, octomap::OcTreeKey goal_key, std::map<uint, SphereMapSegment>::iterator seg_ptr,
                                              float min_odist, bool override_segment_necessity = false);
+  float         calculateUnsafetyOfNode(float radius) {
+    return pow(1 - fmin((radius - planning_min_safe_dist) / (planning_base_safe_dist - planning_min_safe_dist), 1), 2);
+  }
+bool reconstructSphereMapDetailedPath(SphereMapPath& res, SphereMapDetailedAstarNode goal_node);
 
   /* FRONTIERS */
   std::vector<SphereMapFrontierPoint> frontier_exporation_points_;
@@ -541,10 +546,6 @@ public:
     ROS_WARN("found %u bullshit things", num_bad);
   }
 };
-//}
-
-/* utils //{ */
-bool reconstructSphereMapDetailedPath(SphereMapPath& res, SphereMapDetailedAstarNode goal_node);
 //}
 
 };  // namespace spheremap_server

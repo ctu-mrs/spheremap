@@ -2181,6 +2181,7 @@ SphereMapPath SphereMap::computePath(uint start_seg_id, octomap::point3d start_p
 
       float safety_cost_bonus        = 0;
       float interportal_min_safedist = planning_base_safe_dist * 2;
+      float interportal_total_unsafety = 0;
 
       /* IF AT START, COMPUTE DETAILED ASTAR */
       if (compute_astar_in_segments && compute_astar_economically) {
@@ -2192,8 +2193,10 @@ SphereMapPath SphereMap::computePath(uint start_seg_id, octomap::point3d start_p
             auto               addition_res    = cached_search_start_paths_.insert(
                 std::make_pair(conn_iter->first, computeDetailedPathInSegment(node_key_nearest_to_start, portal_goal_key, seg_ptr, 0)));
             interportal_min_safedist = addition_res.first->second.computeMinSafedist();
+            interportal_total_unsafety = addition_res.first->second.total_unsafety;
           } else {
             interportal_min_safedist = found_cached_path_ptr->second.min_safedist;
+            interportal_total_unsafety = found_cached_path_ptr->second.total_unsafety;
           }
         } else {
           /* FIND INTERPORTAL PATH */
@@ -2215,6 +2218,7 @@ SphereMapPath SphereMap::computePath(uint start_seg_id, octomap::point3d start_p
           }
 
           interportal_min_safedist = interportal_path_ptr->second.min_safedist;
+          interportal_total_unsafety  = interportal_path_ptr->second.total_unsafety;
 
           /* cached_path_index = tmp_detailed_paths.size(); */
           /* tmp_detailed_paths.push_back(interportal_path_ptr->second); */
@@ -2222,8 +2226,10 @@ SphereMapPath SphereMap::computePath(uint start_seg_id, octomap::point3d start_p
       }
 
       if (interportal_min_safedist < planning_base_safe_dist) {
-        float safety      = fmin(((interportal_min_safedist - planning_min_safe_dist) / (planning_base_safe_dist - planning_min_safe_dist)), 1);
-        safety_cost_bonus = spheremap_planning_safety_bias_ + spheremap_planning_safety_weight_ * pow(1 - safety, 2);
+        /* float unsafety      = calculateUnsafetyOfNode(interportal_min_safedist ); */
+        /* safety_cost_bonus = spheremap_planning_safety_bias_ + spheremap_planning_safety_weight_ * unsafety; */
+
+        safety_cost_bonus = spheremap_planning_safety_bias_ + spheremap_planning_safety_weight_ * interportal_total_unsafety;
       }
 
       /* CREATE NEW ASTAR NODE AND STORE TO FRONTIER*/
@@ -2522,8 +2528,8 @@ SphereMapPath SphereMap::computeDetailedPathInSegment(octomap::OcTreeKey start_k
       float safety_cost_bonus = 0;
       if (adj_node_ptr->valuePtr()->radius < planning_base_safe_dist) {
         /* safety_cost_bonus = 200 + 200 * (1 - ((adj_node_ptr->valuePtr()->radius - min_safe_dist) / (base_safe_dist - min_safe_dist))); */
-        float safety      = fmin(((adj_node_ptr->valuePtr()->radius - planning_min_safe_dist) / (planning_base_safe_dist - planning_min_safe_dist)), 1);
-        safety_cost_bonus = spheremap_planning_safety_bias_ + spheremap_planning_safety_weight_ * pow((1 - safety), 2);
+        float unsafety      = calculateUnsafetyOfNode(adj_node_ptr->valuePtr()->radius);
+        safety_cost_bonus = spheremap_planning_safety_bias_ + spheremap_planning_safety_weight_ * unsafety;
       }
       float g_cost = (expanded.pos - adj_node_ptr->valuePtr()->pos).norm() + safety_cost_bonus;
       float h_cost = (adj_node_ptr->valuePtr()->pos - goal_pos).norm();
@@ -2834,7 +2840,7 @@ void SphereMap::updateDistsFromHome() {
 //}
 
 /* reconstructSphereMapDetailedPath() //{ */
-bool reconstructSphereMapDetailedPath(SphereMapPath& res, SphereMapDetailedAstarNode goal_node) {
+bool SphereMap::reconstructSphereMapDetailedPath(SphereMapPath& res, SphereMapDetailedAstarNode goal_node) {
   std::vector<uint>             ids_r        = {};
   std::vector<octomap::point3d> positions_r  = {};
   std::vector<float>            odists_r     = {};
@@ -2856,8 +2862,10 @@ bool reconstructSphereMapDetailedPath(SphereMapPath& res, SphereMapDetailedAstar
   std::vector<float>            odists    = {odists_r[ids_r.size() - 1]};
   octomap::point3d              last_pos  = positions[0];
   float                         len_sum   = 0;
+  float total_unsafety = 0;
   for (int i = ids_r.size() - 2; i > -1; i--) {
     len_sum += (positions_r[i] - last_pos).norm();
+    total_unsafety  += calculateUnsafetyOfNode(odists_r[i]);
     last_pos = positions_r[i];
 
     positions.push_back(positions_r[i]);
@@ -2865,6 +2873,7 @@ bool reconstructSphereMapDetailedPath(SphereMapPath& res, SphereMapDetailedAstar
     odists.push_back(odists_r[i]);
   }
   res.length_metres  = len_sum;
+  res.total_unsafety = total_unsafety;
   res.seg_ids        = ids;
   res.positions      = positions;
   res.obstacle_dists = odists;
