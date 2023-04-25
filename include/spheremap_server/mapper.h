@@ -17,6 +17,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <spheremap_server/GetSphereMapPathSrv.h>
+#include <spheremap_server/SetSafetyPlanningParamsSrv.h>
 #include <spheremap_server/SegmapMsg.h>
 
 #include <spheremap_server/mapping_structures.h>
@@ -169,6 +170,9 @@ public:
   /* services */
   ros::ServiceServer spheremap_planning_srv_;
   bool               callbackGetSphereMapPathSrv(GetSphereMapPathSrv::Request& req, GetSphereMapPathSrv::Response& resp);
+
+  ros::ServiceServer spheremap_planning_params_srv_;
+  bool               callbackSetSafetyPlanningParams(SetSafetyPlanningParamsSrv::Request& req, SetSafetyPlanningParamsSrv::Response& resp);
 
   /* timers */
   ros::Timer timer_update_visited_positions_map_;

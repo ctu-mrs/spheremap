@@ -41,6 +41,7 @@ add_message_files(
 add_service_files(
   FILES
   GetSphereMapPathSrv.srv
+  SetSafetyPlanningParamsSrv.srv
 )
 
 generate_messages(

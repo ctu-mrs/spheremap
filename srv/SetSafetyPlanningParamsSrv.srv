@@ -1,0 +1,7 @@
+std_msgs/Header header
+float32 spheremap_planning_safety_weight
+float32 spheremap_planning_safety_bias
+bool recompute_stored_paths_in_segments
+---
+bool success
+string message

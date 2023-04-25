@@ -173,6 +173,7 @@ void ExplorationMapper::initialize(ros::NodeHandle* nh) {
 
   /* services */
   spheremap_planning_srv_ = nh->advertiseService("GetSphereMapPathSrv", &ExplorationMapper::callbackGetSphereMapPathSrv, this);
+  spheremap_planning_params_srv_ = nh->advertiseService("SetSafetyPlanningParams", &ExplorationMapper::callbackSetSafetyPlanningParams, this);
 
   is_initialized_ = true;
   ROS_INFO("mapper init done");
@@ -267,6 +268,26 @@ bool ExplorationMapper::callbackGetSphereMapPathSrv(GetSphereMapPathSrv::Request
   respath.original_goal                           = goal_pos_spheremap_frame;
   std::vector<visualization_msgs::Marker> markers = getSphereMapPathsMarkers({respath});
   publishMarkers(markers, &pub_markers_planning_, "srv_computed_paths", map_frame_, 0, -1);
+
+  /* RETURN */
+  resp.message = "success!";
+  resp.success = true;
+  return true;
+}
+//}
+
+/* bool callbackSetSafetyPlanningParams() //{ */
+bool ExplorationMapper::callbackSetSafetyPlanningParams(SetSafetyPlanningParamsSrv::Request& req, SetSafetyPlanningParamsSrv::Response& resp) {
+  resp.success = false;
+  std::scoped_lock lock(mutex_spheremap_);
+
+  if(spheremap_ == NULL){
+    resp.message = "spheremap not initialized!";
+    return true;
+  }
+
+  spheremap_->spheremap_planning_safety_weight_ = req.spheremap_planning_safety_weight;
+  spheremap_->spheremap_planning_safety_bias_ = req.spheremap_planning_safety_bias;
 
   /* RETURN */
   resp.message = "success!";
