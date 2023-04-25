@@ -12,7 +12,8 @@ namespace spheremap_server
 /* SphereMap //{ */
 SphereMap::SphereMap(float _min_safe_dist, float _base_safe_dist, TopologyMappingSettings topo_settings, StagingAreaSettings* _staging_area_settings) {
   min_safe_dist                   = _min_safe_dist;
-  base_safe_dist                  = _base_safe_dist;
+  planning_min_safe_dist                   = _min_safe_dist;
+  planning_base_safe_dist                  = _base_safe_dist;
   staging_area_settings_ptr_      = _staging_area_settings;
   topology_mapping_settings_      = topo_settings;
   largest_bounging_sphere_radius_ = topo_settings.merged_segment_max_size_;
