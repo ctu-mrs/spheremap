@@ -5,7 +5,6 @@ max_graph_dist_for_spheremap_planning: 10
 spheremap_min_safe_dist: 0.8 # the distance under which planning does not go, and spheres are deleted
 spheremap_fully_safe_dist: 3 # the distance after which no penalty is added to sphere-sphere transition due to being risky
 spheremap_planning_safety_weight: 50 # weight for the safety cost between spheres in planning, as epsilon in the paper
-spheremap_planning_safety_bias: 100 # bias added for the cost if sphere radius < spheremap_fully_safe_dist
 
 # SETTINGS FOR SENDING LTV-MAP MARKERS OR FRAGMENTED MSGS
 ltvmap_sending_interval: 2

@@ -44,7 +44,6 @@ public:
   float absolute_max_map_update_dist_highres = 40;
   float max_graph_dist_for_spheremap_planning_ = 10;
   float spheremap_planning_safety_weight_;
-  float spheremap_planning_safety_bias_;
 
   bool        use_global_search_bbx_;
   BoundingBox global_search_bbx_;
