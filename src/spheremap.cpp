@@ -12,8 +12,8 @@ namespace spheremap_server
 /* SphereMap //{ */
 SphereMap::SphereMap(float _min_safe_dist, float _base_safe_dist, TopologyMappingSettings topo_settings, StagingAreaSettings* _staging_area_settings) {
   min_safe_dist                   = _min_safe_dist;
-  planning_min_safe_dist                   = _min_safe_dist;
-  planning_base_safe_dist                  = _base_safe_dist;
+  planning_min_safe_dist          = _min_safe_dist;
+  planning_base_safe_dist         = _base_safe_dist;
   staging_area_settings_ptr_      = _staging_area_settings;
   topology_mapping_settings_      = topo_settings;
   largest_bounging_sphere_radius_ = topo_settings.merged_segment_max_size_;
@@ -526,7 +526,7 @@ void SphereMap::growNodesFull(octomap::point3d current_position_, float box_half
       /* } */
 
       octomap::OcTreeNode* nodeptr = occupancy_octree_->search(sample_point);
-      if(nodeptr==NULL || occupancy_octree_->isNodeOccupied(nodeptr)){
+      if (nodeptr == NULL || occupancy_octree_->isNodeOccupied(nodeptr)) {
         break;
       }
 
@@ -592,7 +592,7 @@ void SphereMap::growNodesFull(octomap::point3d current_position_, float box_half
     octomap::point3d sample_point = testpoints[testpoint_pairs[i].second];
     /* FILTER OUT POINTS IN DENY BBX */
     if (generation_deny_bbx.isPointInside(sample_point)) {
-      ROS_INFO_COND(debug_sampling,"a");
+      ROS_INFO_COND(debug_sampling, "a");
       continue;
     }
 
@@ -600,7 +600,7 @@ void SphereMap::growNodesFull(octomap::point3d current_position_, float box_half
     std::vector<octomap::OcTreeKey> ckeys = {};
 
     if (nodes->search(sample_point, 16) != NULL) {
-      ROS_INFO_COND(debug_sampling,"x");
+      ROS_INFO_COND(debug_sampling, "x");
       continue;
     }
 
@@ -613,7 +613,7 @@ void SphereMap::growNodesFull(octomap::point3d current_position_, float box_half
       if (odist < saved_odists[j] - sphere_intersection_reserve && dist2 < pow(fmax(sphere_intersection_reserve, saved_odists[j] / 1.5), 2)) {
         debug_points.push_back(sample_point);
         is_in_map = true;
-        ROS_INFO_COND(debug_sampling,"b");
+        ROS_INFO_COND(debug_sampling, "b");
         break;
       }
       /* if (odist < saved_odists[j] && dist2 < pow(saved_odists[j] - 2 * sphere_intersection_reserve, 2)) { */
@@ -622,7 +622,7 @@ void SphereMap::growNodesFull(octomap::point3d current_position_, float box_half
       /* } */
 
       if (isPinnedBy(dist2, sample_point, saved_positions[j], odist, saved_odists[j])) {
-        ROS_INFO_COND(debug_sampling,"c");
+        ROS_INFO_COND(debug_sampling, "c");
         is_in_map = true;
         break;
       }
@@ -2013,7 +2013,7 @@ std::optional<std::pair<float, octomap::OcTreeKey>> SphereMap::getNearestConnect
 //}
 
 /* SphereMapPath::computePathsToGoalsWithConnectingToGraph() //{ */
-std::optional<std::vector<SphereMapPath>> SphereMap::computePathsToGoalsWithConnectingToGraph(octomap::point3d start_pos, float start_pos_obstacle_distance,
+std::optional<std::vector<SphereMapPath>> SphereMap::computePathsToGoalsWithConnectingToGraph(octomap::point3d start_pos, float max_dist_start_from_graph,
                                                                                               std::vector<octomap::point3d> goal_positions,
                                                                                               float max_goal_pos_dist, bool verbose,
                                                                                               bool use_precomputed_paths) {
@@ -2021,14 +2021,15 @@ std::optional<std::vector<SphereMapPath>> SphereMap::computePathsToGoalsWithConn
   std::vector<SphereMapPath> res = {};
   /* std::shared_ptr<darpa_planning::PCLMap> pclmap = exploration_mapper_->getPCLMapSharedPtr(); */
 
-  auto nearest_node_query = getNearestConnectableNodeKey(start_pos, start_pos_obstacle_distance);
+  auto nearest_node_query = getNearestNodeKey(start_pos, max_dist_start_from_graph);
   if (nearest_node_query == std::nullopt) {
     ROS_WARN_COND(verbose, "[SphereMapNavigation]: start pos is not connected to graph!");
     return std::nullopt;
   }
 
   /* NOW FIND PATH FOR EACH GOAL POSITION */
-  for (octomap::point3d goal_pos : goal_positions) {
+  for (uint goal_id = 0; goal_id < goal_positions.size(); goal_id++) {
+    octomap::point3d goal_pos = goal_positions[goal_id];
     /* TRY CONNECTING THE POSITION TO SPHEREMAP GRAPH */
     std::vector<std::pair<float, octomap::OcTreeKey>> sorted_nodes_nearest_to_goal =
         /* getNearestNodeKeysForEachSegment(goal_vp.position, max_goal_pos_dist, true, getObstacleDist(goal_vp.position, pclmap)); */
@@ -2061,16 +2062,15 @@ std::optional<std::vector<SphereMapPath>> SphereMap::computePathsToGoalsWithConn
       uint          current_seg_id = nodes->search(nearest_node_query.value().second)->valuePtr()->segment_id;
       uint          goal_seg_id    = nodes->search(sorted_nodes_nearest_to_goal[g].second)->valuePtr()->segment_id;
       SphereMapPath res_path;
-      float         planning_min_safedist = min_safe_dist;
 
       if (use_precomputed_paths) {
         res_path = computePath(current_seg_id, start_pos, goal_seg_id, goal_pos, true, nearest_node_query.value().second,
                                sorted_nodes_nearest_to_goal[g].second, true);
       } else {
         res_path = computeDetailedPathInSegment(nearest_node_query.value().second, sorted_nodes_nearest_to_goal[g].second, segments.begin(),
-                                                planning_min_safedist, true);
+                                                planning_min_safe_dist, true);
       }
-      ROS_INFO_COND(verbose, "[SphereMapNavigation]: found path has %lu waypoints", res_path.positions.size());
+      /* ROS_INFO_COND(verbose, "[SphereMapNavigation]: found path has %lu waypoints", res_path.positions.size()); */
 
       if (res_path.reaches_goal) {
         ROS_INFO_COND(verbose, "[SphereMapNavigation]: returning this path for this goal");
@@ -2179,8 +2179,8 @@ SphereMapPath SphereMap::computePath(uint start_seg_id, octomap::point3d start_p
       }
       explored_portals_.insert(portal_id_pair);
 
-      float safety_cost_bonus        = 0;
-      float interportal_min_safedist = planning_base_safe_dist * 2;
+      float safety_cost_bonus          = 0;
+      float interportal_min_safedist   = planning_base_safe_dist * 2;
       float interportal_total_unsafety = 0;
 
       /* IF AT START, COMPUTE DETAILED ASTAR */
@@ -2192,10 +2192,10 @@ SphereMapPath SphereMap::computePath(uint start_seg_id, octomap::point3d start_p
             octomap::OcTreeKey portal_goal_key = conn_iter->second.own_key;
             auto               addition_res    = cached_search_start_paths_.insert(
                 std::make_pair(conn_iter->first, computeDetailedPathInSegment(node_key_nearest_to_start, portal_goal_key, seg_ptr, 0)));
-            interportal_min_safedist = addition_res.first->second.computeMinSafedist();
+            interportal_min_safedist   = addition_res.first->second.computeMinSafedist();
             interportal_total_unsafety = addition_res.first->second.total_unsafety;
           } else {
-            interportal_min_safedist = found_cached_path_ptr->second.min_safedist;
+            interportal_min_safedist   = found_cached_path_ptr->second.min_safedist;
             interportal_total_unsafety = found_cached_path_ptr->second.total_unsafety;
           }
         } else {
@@ -2217,8 +2217,8 @@ SphereMapPath SphereMap::computePath(uint start_seg_id, octomap::point3d start_p
             continue;
           }
 
-          interportal_min_safedist = interportal_path_ptr->second.min_safedist;
-          interportal_total_unsafety  = interportal_path_ptr->second.total_unsafety;
+          interportal_min_safedist   = interportal_path_ptr->second.min_safedist;
+          interportal_total_unsafety = interportal_path_ptr->second.total_unsafety;
 
           /* cached_path_index = tmp_detailed_paths.size(); */
           /* tmp_detailed_paths.push_back(interportal_path_ptr->second); */
@@ -2528,7 +2528,7 @@ SphereMapPath SphereMap::computeDetailedPathInSegment(octomap::OcTreeKey start_k
       float safety_cost_bonus = 0;
       if (adj_node_ptr->valuePtr()->radius < planning_base_safe_dist) {
         /* safety_cost_bonus = 200 + 200 * (1 - ((adj_node_ptr->valuePtr()->radius - min_safe_dist) / (base_safe_dist - min_safe_dist))); */
-        float unsafety      = calculateUnsafetyOfNode(adj_node_ptr->valuePtr()->radius);
+        float unsafety    = calculateUnsafetyOfNode(adj_node_ptr->valuePtr()->radius);
         safety_cost_bonus = spheremap_planning_safety_bias_ + spheremap_planning_safety_weight_ * unsafety;
       }
       float g_cost = (expanded.pos - adj_node_ptr->valuePtr()->pos).norm() + safety_cost_bonus;
@@ -2857,15 +2857,15 @@ bool SphereMap::reconstructSphereMapDetailedPath(SphereMapPath& res, SphereMapDe
   }
 
   /* CONSTRUCT PATH */
-  std::vector<uint>             ids       = {ids_r[ids_r.size() - 1]};
-  std::vector<octomap::point3d> positions = {positions_r[ids_r.size() - 1]};
-  std::vector<float>            odists    = {odists_r[ids_r.size() - 1]};
-  octomap::point3d              last_pos  = positions[0];
-  float                         len_sum   = 0;
-  float total_unsafety = 0;
+  std::vector<uint>             ids            = {ids_r[ids_r.size() - 1]};
+  std::vector<octomap::point3d> positions      = {positions_r[ids_r.size() - 1]};
+  std::vector<float>            odists         = {odists_r[ids_r.size() - 1]};
+  octomap::point3d              last_pos       = positions[0];
+  float                         len_sum        = 0;
+  float                         total_unsafety = 0;
   for (int i = ids_r.size() - 2; i > -1; i--) {
     len_sum += (positions_r[i] - last_pos).norm();
-    total_unsafety  += calculateUnsafetyOfNode(odists_r[i]);
+    total_unsafety += calculateUnsafetyOfNode(odists_r[i]);
     last_pos = positions_r[i];
 
     positions.push_back(positions_r[i]);

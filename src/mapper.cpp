@@ -152,8 +152,8 @@ void ExplorationMapper::initialize(ros::NodeHandle* nh) {
   /* topology */
   spheremap_ =
       std::shared_ptr<SphereMap>(new SphereMap(spheremap_min_safe_dist_, spheremap_fully_safe_dist_, topology_mapping_settings_, &staging_area_settings_));
-  spheremap_->max_update_box_size_ = absolute_max_map_update_dist - 5;  // redundant
-  spheremap_->spheremap_planning_safety_bias_ = spheremap_planning_safety_bias_;
+  spheremap_->max_update_box_size_              = absolute_max_map_update_dist - 5;  // redundant
+  spheremap_->spheremap_planning_safety_bias_   = spheremap_planning_safety_bias_;
   spheremap_->spheremap_planning_safety_weight_ = spheremap_planning_safety_weight_;
 
   visited_positions_map_ =
@@ -172,7 +172,7 @@ void ExplorationMapper::initialize(ros::NodeHandle* nh) {
   /* } */
 
   /* services */
-  spheremap_planning_srv_ = nh->advertiseService("GetSphereMapPathSrv", &ExplorationMapper::callbackGetSphereMapPathSrv, this);
+  spheremap_planning_srv_        = nh->advertiseService("GetSphereMapPathSrv", &ExplorationMapper::callbackGetSphereMapPathSrv, this);
   spheremap_planning_params_srv_ = nh->advertiseService("SetSafetyPlanningParams", &ExplorationMapper::callbackSetSafetyPlanningParams, this);
 
   is_initialized_ = true;
@@ -281,13 +281,14 @@ bool ExplorationMapper::callbackSetSafetyPlanningParams(SetSafetyPlanningParamsS
   resp.success = false;
   std::scoped_lock lock(mutex_spheremap_);
 
-  if(spheremap_ == NULL){
+  if (spheremap_ == NULL) {
     resp.message = "spheremap not initialized!";
     return true;
   }
 
   spheremap_->spheremap_planning_safety_weight_ = req.spheremap_planning_safety_weight;
-  spheremap_->spheremap_planning_safety_bias_ = req.spheremap_planning_safety_bias;
+  /* spheremap_->spheremap_planning_safety_bias_ = req.spheremap_planning_safety_bias; */  // TODO bias is not supported in cached paths computations as of now
+  spheremap_->spheremap_planning_safety_bias_ = 0;
 
   /* RETURN */
   resp.message = "success!";
