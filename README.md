@@ -4,7 +4,7 @@
 
 SphereMap is a multi-layer dynamic map built online on-board a UAV. 
 It allows weighing path length and distance from obstacles along the path for safety-aware planning, while also finding paths faster than a conventional occupancy grid (~1 order of magnitude or ~3 orders if precomputed paths are used).
-The working principle is that at `~2Hz`, the server server updates the map near the UAV's current position &mdash filling free space with spheres, connecting them into a graph of intersecting spheres, and then segmenting this graph into approx. convex regions and computing and storing paths inside these regions for quick long-distance planning.
+The working principle is that at `~2Hz`, the server server updates the map near the UAV's current position &#151 filling free space with spheres, connecting them into a graph of intersecting spheres, and then segmenting this graph into approx. convex regions and computing and storing paths inside these regions for quick long-distance planning.
 
 This package is the implementation of the article **SphereMap: Dynamic Multi-Layer Graph Structure for Rapid Safety-Aware UAV Planning**. [PDF](https://arxiv.org/pdf/2302.01833.pdf), [DOI](http://dx.doi.org/10.1109/LRA.2022.3195194).
 
