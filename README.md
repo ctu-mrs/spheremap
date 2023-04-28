@@ -76,7 +76,7 @@ for Subterranean Search and Rescue in DARPA SubT", Field Robotics 3:1–68, (202
 ```
 
 
-The MRS UAV system for enabling autonomous flight of UAVs. [pdf](https://link.springer.com/content/pdf/10.1007/s10846-021-01383-5.pdf), [doi.org/10.1007/s10846-021-01383-5](https://doi.org/10.1007/s10846-021-01383-5).
+The [MRS UAV system](https://github.com/ctu-mrs/mrs_uav_system) for enabling autonomous flight of UAVs. [pdf](https://link.springer.com/content/pdf/10.1007/s10846-021-01383-5.pdf), [doi](https://doi.org/10.1007/s10846-021-01383-5).
 ```
 Baca, T., Petrlik, M., Vrba, M., Spurny, V., Penicka, R., Hert, D., and Saska, M.,
 "The MRS UAV System: Pushing the Frontiers of Reproducible Research, Real-world Deployment, and
