@@ -1,5 +1,7 @@
 # SphereMap
 
+![](.fig/spheremap.jpg)
+
 ## SphereMap overview
 
 SphereMap is a multi-layer dynamic map built online on-board a UAV. 
@@ -34,6 +36,8 @@ There are various configuration params with which you can play with, described i
 
 ### Safety-aware planning
 
+![](.fig/multi_goal.jpg)
+
 Call the service `get_spheremap_path` for pathfinding in the SphereMap. 
 It will transform the given start and goal points from the given frame to the SphereMap frame, try to find a path, and return it as an array of `geometry_msgs::Point` if successful.
 If you set the flag `ignore_precomputed_paths` to `true` in the config file, the planning will run A* over the entire SphereMap graph, which can give a better path than using the precomputed paths, but will be slower.
@@ -44,7 +48,18 @@ There is also a service for changing the weight mid-flight `set_safety_planning_
 
 ### Using the LTV-Map lightweight topological-volumetric map
 
+![](.fig/ltvmap.jpg)
+
 Currently, the LTV-Map described in the publication is built along with the SphereMap and is published as a `visualization_msgs/MarkerArray` purely for visualization. Using the LTV-Maps for cooperative exploration planning was implemented in the DARPA SubT Challenge and is described in [our other paper](https://arxiv.org/abs/2206.08185), but it was not implemented in the SphereMap server.
+
+### Examples
+
+An example of how to use the SphereMap can be found in the [`examples/`](https://github.com/ctu-mrs/spheremap/tree/master/examples) directory.
+To run the example, first download the dataset by running the [`examples/download_dataset.sh`](https://github.com/ctu-mrs/spheremap/tree/master/examples/download_dataset.sh) script.
+Then the example can be run using the [`examples/example.launch`](https://github.com/ctu-mrs/spheremap/tree/master/example.launch) launchfile.
+After running the launchfile, the SphereMap server is initialized, the rosbag file with the dataset is played and an RViz window shows the process of building the SphereMap.
+The paths can be queried by calling the `get_spheremap_path` service.
+
 
 ## Possible improvements
 
