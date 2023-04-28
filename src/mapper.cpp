@@ -1020,7 +1020,7 @@ void ExplorationMapper::generateFrontierNodes(std::shared_ptr<octomap::OcTree> o
     iterator_key = it.getKey();
     /* octomap::OcTreeNode* oc_node = occupancy_octree->search(iterator_key, search_depth); */
 
-    if (*it == NULL || occupancy_octree->isNodeOccupied(*it)) {
+    if (it == NULL || occupancy_octree->isNodeOccupied(*it)) {
       continue;
     }
 

@@ -1,6 +1,6 @@
 #include <spheremap_server/mapper.h>
 #include <spheremap_server/utility_functions.h>
-/* every nodelet must include macros which export the class as a nodelet plugin */
+
 #include <pluginlib/class_list_macros.h>
 #include <algorithm>
 #include <random>
@@ -25,9 +25,6 @@ void SegMap::initializeOctomaps(float resolution, float safedist) {
 }
 //}
 
-/* std::vector<octomap::OcTreeKey> getKeyOffsetsForSafedistgcc */
-/* std::vector<int> getMapLimits(std::shared_ptr<octomap::OcTree> occupancy_octree_, BoundingBox bbx){ */
-/*   k */
 /* } */
 
 /* SegMap::update() //{ */
@@ -494,161 +491,6 @@ void SegMap::update(octomap::point3d current_position_, [[maybe_unused]] float c
   segment_octree_->occupancy_octree = NULL;
   segment_octree_->pcl_map_ptr      = NULL;
 }  // namespace spheremap_server
-//}
-
-/* SegMap::convertSegmapToMsg() //{ */
-std::vector<SegmapMsg> SegMap::convertSegmapToFragmentMsgs(std::shared_ptr<SegMap> segmap, uint segmap_message_index, int max_data_bytes,
-                                                           tf2_ros::Buffer* tfbuf, std::string segmap_frame, std::string shared_frame) {
-  /* ROS_INFO("[SegMap]: converting to messages"); */
-  /* uint header_bytes  = 10; */
-  /* uint segment_bytes = 13; */
-  /* uint portal_bytes  = 4; */
-  /* uint fg_bytes      = 2 + 12; */
-
-  /* if (header_bytes + std::max(std::max(segment_bytes, portal_bytes), fg_bytes) > max_data_bytes) { */
-  /*   ROS_ERROR("[SegmapSending]: required fragment message size too small, cannot send some topology objects"); */
-  /*   ROS_ERROR("[SegmapSending]: max data bytes: %d", max_data_bytes); */
-  /*   return {}; */
-  /* } */
-
-  /* int                                fragment_index = 0; */
-  /* SegmapMsg              msg1; */
-  /* std::vector<SegmapMsg> res = {}; */
-  /* res.push_back(msg1); */
-  /* uint byte_sum = header_bytes; */
-
-  /* for (std::vector<octomap::Segment>::iterator it = segmap->segment_octree_->segments.begin(); it != segmap->segment_octree_->segments.end(); it++) { */
-
-  /*   /1* TRANSFORM BLOCK FROM LOCAL TO SHARED FRAME *1/ */
-  /*   mrs_msgs::ReferenceStamped local_block_transform; */
-  /*   local_block_transform.reference.position.x = it->center.x(); */
-  /*   local_block_transform.reference.position.y = it->center.y(); */
-  /*   local_block_transform.reference.position.z = it->center.z(); */
-  /*   local_block_transform.reference.heading    = it->block_alpha; */
-  /*   local_block_transform.header.frame_id      = segmap_frame; */
-  /*   local_block_transform.header.stamp         = ros::Time::now(); */
-  /*   auto shared_block_transform                = transformer.transformSingle(shared_frame, local_block_transform); */
-  /*   if (shared_block_transform == std::nullopt) { */
-  /*     ROS_ERROR("[SegmapSending]: Transformation error while transforming from %s to %s, cannot send segmap", segmap_frame.c_str(), shared_frame.c_str()); */
-  /*     return {}; */
-  /*   } */
-  /*   geometry_msgs::Vector3 sent_pos; */
-  /*   sent_pos.x       = shared_block_transform.value().reference.position.x; */
-  /*   sent_pos.y       = shared_block_transform.value().reference.position.y; */
-  /*   sent_pos.z       = shared_block_transform.value().reference.position.z; */
-  /*   float sent_alpha = shared_block_transform.value().reference.heading; */
-
-  /*   while (sent_alpha < 0) { */
-  /*     sent_alpha += 2 * M_PI; */
-  /*   } */
-  /*   if (sent_alpha > M_PI) { */
-  /*     sent_alpha = M_PI - sent_alpha; */
-  /*   } */
-
-  /*   /1* COMPRESS ALPHA AND SIZE OF BLOCK *1/ */
-  /*   uint8_t sent_alpha_compressed = 255 * (sent_alpha / M_PI); */
-  /*   uint8_t a_compressed          = 255 * (it->block_a / 50); */
-  /*   uint8_t b_compressed          = 255 * (it->block_b / 50); */
-  /*   uint8_t c_compressed          = 255 * (it->block_c / 50); */
-
-
-  /*   /1* COMPRESS RADIUS AND COVERAGE *1/ */
-  /*   float   radius              = it->bounding_sphere_radius; */
-  /*   uint8_t radius_compressed   = 255 * (radius / 50); */
-  /*   uint8_t coverage_compressed = 255 * it->surface_coverage_local; */
-  /*   if (radius > 50) { */
-  /*     radius_compressed = 255; */
-  /*   } */
-
-  /*   /1* CHECK BYTE SIZE OF CURRENT MSG AND CUT IF NECCESSARY *1/ */
-  /*   if (byte_sum + segment_bytes > max_data_bytes) { */
-  /*     byte_sum = header_bytes; */
-  /*     SegmapMsg new_msg; */
-  /*     res.push_back(new_msg); */
-  /*     fragment_index++; */
-  /*   } */
-  /*   byte_sum += segment_bytes; */
-
-  /*   res[fragment_index].segment_positions.push_back(sent_pos); */
-  /*   res[fragment_index].segment_surface_coverage.push_back(coverage_compressed); */
-  /*   res[fragment_index].shape_data.push_back(sent_alpha_compressed); */
-  /*   res[fragment_index].shape_data.push_back(a_compressed); */
-  /*   res[fragment_index].shape_data.push_back(b_compressed); */
-  /*   res[fragment_index].shape_data.push_back(c_compressed); */
-  /* } */
-
-  /* for (std::vector<octomap::SegmentPortal>::iterator it = segmap->segment_octree_->portals.begin(); it != segmap->segment_octree_->portals.end(); it++) { */
-  /*   if (byte_sum + portal_bytes > max_data_bytes) { */
-  /*     byte_sum = header_bytes; */
-  /*     SegmapMsg new_msg; */
-  /*     res.push_back(new_msg); */
-  /*     fragment_index++; */
-  /*   } */
-  /*   byte_sum += portal_bytes; */
-  /*   res[fragment_index].portal_ids1.push_back(segmap->segment_octree_->getSegmentIndex(it->id1)); */
-  /*   res[fragment_index].portal_ids2.push_back(segmap->segment_octree_->getSegmentIndex(it->id2)); */
-  /* } */
-
-  /* /1* for (std::vector<octomap::Segment>::iterator it = segmap->segment_octree_->segments.begin(); it != segmap->segment_octree_->segments.end(); it++) { *1/
-   */
-  /* /1*   if (it->frontier_value < 0.1) { *1/ */
-  /* /1*     continue; *1/ */
-  /* /1*   } *1/ */
-
-  /* /1*   if (byte_sum + fg_bytes > max_data_bytes) { *1/ */
-  /* /1*     byte_sum = header_bytes; *1/ */
-  /* /1*     SegmapMsg new_msg; *1/ */
-  /* /1*     res.push_back(new_msg); *1/ */
-  /* /1*     fragment_index++; *1/ */
-  /* /1*   } *1/ */
-  /* /1*   byte_sum += fg_bytes; *1/ */
-  /* /1*   ROS_INFO("[SegmapSending]: adding frontier to msg for sending"); *1/ */
-  /* /1*   res[fragment_index].frontier_group_seg_ids.push_back(segmap->segment_octree_->getSegmentIndex(it->id)); *1/ */
-  /* /1* } *1/ */
-
-  /* for (std::vector<FrontierGroup>::iterator it = segmap->frontier_groups_.begin(); it != segmap->frontier_groups_.end(); it++) { */
-  /*   if (byte_sum + fg_bytes > max_data_bytes) { */
-  /*     byte_sum = header_bytes; */
-  /*     SegmapMsg new_msg; */
-  /*     res.push_back(new_msg); */
-  /*     fragment_index++; */
-  /*   } */
-  /*   byte_sum += fg_bytes; */
-  /*   ROS_INFO("[SegmapSending]: adding frontier to msg for sending"); */
-  /*   res[fragment_index].frontier_group_seg_ids.push_back(segmap->segment_octree_->getSegmentIndex(it->viable_fep.seg_id)); */
-
-  /*   /1* TRANSFORM POS *1/ */
-  /*   mrs_msgs::ReferenceStamped local_block_transform; */
-  /*   local_block_transform.reference.position.x = it->viable_fep.pos.x(); */
-  /*   local_block_transform.reference.position.y = it->viable_fep.pos.y(); */
-  /*   local_block_transform.reference.position.z = it->viable_fep.pos.z(); */
-  /*   local_block_transform.header.frame_id      = segmap_frame; */
-  /*   local_block_transform.header.stamp         = ros::Time::now(); */
-  /*   auto shared_block_transform                = transformer.transformSingle(shared_frame, local_block_transform); */
-  /*   if (shared_block_transform == std::nullopt) { */
-  /*     ROS_ERROR("[SegmapSending]: Transformation error while transforming from %s to %s, cannot send segmap", segmap_frame.c_str(), shared_frame.c_str()); */
-  /*     return {}; */
-  /*   } */
-  /*   geometry_msgs::Vector3 sent_pos; */
-  /*   sent_pos.x = shared_block_transform.value().reference.position.x; */
-  /*   sent_pos.y = shared_block_transform.value().reference.position.y; */
-  /*   sent_pos.z = shared_block_transform.value().reference.position.z; */
-
-  /*   res[fragment_index].frontier_group_positions.push_back(sent_pos); */
-  /* } */
-
-  /* uint num_total_fragments = res.size(); */
-
-  /* for (uint i = 0; i < res.size(); i++) { */
-  /*   res[i].fragment_index      = (uint16_t)i; */
-  /*   res[i].num_total_fragments = (uint16_t)num_total_fragments; */
-  /*   res[i].message_index       = (uint32_t)segmap_message_index; */
-  /* } */
-
-  /* /1* msg.portal_ids1.push_back(); *1/ */
-  /* ROS_INFO("[SegMap]: conversion to message successful"); */
-  /* return res; */
-}
 //}
 
 /* SegMap::convertMsgToSegmap() //{ */

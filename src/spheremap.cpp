@@ -660,7 +660,7 @@ void SphereMap::growNodesFull(octomap::point3d current_position_, float box_half
 
   time_end = ros::WallTime::now();
   ROS_INFO(
-      "[SphereMap]: expansion time: %f.  testpoints size: %lu, points from raycasting: %lu, points from sampling octomap free voxels: %lu, tespoints total: "
+      "[SphereMap]: expansion time: %f.  testpoints size: %lu, points from raycasting: %u, points from sampling octomap free voxels: %u, tespoints total: "
       "%lu, added spheres in total: %lu",
       (time_end - time_start).toSec() * 1000, testpoints.size(), num_sampled_by_raycasts, num_sampled_by_nearness, testpoints.size(),
       nodes_for_connections_update.size());
