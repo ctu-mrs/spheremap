@@ -1,6 +1,6 @@
 # SphereMap
 
-![](.fig/spheremap.jpg)
+![](.fig/spheremap.png)
 
 ## SphereMap overview
 
@@ -36,7 +36,7 @@ There are various configuration params with which you can play with, described i
 
 ### Safety-aware planning
 
-![](.fig/multi_goal.jpg)
+![](.fig/multi_goal.png)
 
 Call the service `get_spheremap_path` for pathfinding in the SphereMap. 
 It will transform the given start and goal points from the given frame to the SphereMap frame, try to find a path, and return it as an array of `geometry_msgs::Point` if successful.
@@ -48,7 +48,7 @@ There is also a service for changing the weight mid-flight `set_safety_planning_
 
 ### Using the LTV-Map lightweight topological-volumetric map
 
-![](.fig/ltvmap.jpg)
+![](.fig/ltvmap.png)
 
 Currently, the LTV-Map described in the publication is built along with the SphereMap and is published as a `visualization_msgs/MarkerArray` purely for visualization. Using the LTV-Maps for cooperative exploration planning was implemented in the DARPA SubT Challenge and is described in [our other paper](https://arxiv.org/abs/2206.08185), but it was not implemented in the SphereMap server.
 
