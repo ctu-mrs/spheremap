@@ -8,7 +8,7 @@ SphereMap is a multi-layer dynamic map built online on-board a UAV.
 It allows weighing path length and distance from obstacles along the path for safety-aware planning, while also finding paths faster than a conventional occupancy grid (~1 order of magnitude or ~3 orders if precomputed paths are used).
 The working principle is that at `~2Hz`, the server server updates the map near the UAV's current position — filling free space with spheres, connecting them into a graph of intersecting spheres, and then segmenting this graph into approx. convex regions and computing and storing paths inside these regions for quick long-distance planning.
 
-This package is the implementation of the article **SphereMap: Dynamic Multi-Layer Graph Structure for Rapid Safety-Aware UAV Planning**. [PDF](https://arxiv.org/pdf/2302.01833.pdf), [DOI](http://dx.doi.org/10.1109/LRA.2022.3195194).
+This package is the implementation of the article **SphereMap: Dynamic Multi-Layer Graph Structure for Rapid Safety-Aware UAV Planning**. [pdf](https://arxiv.org/pdf/2302.01833.pdf), [doi](http://dx.doi.org/10.1109/LRA.2022.3195194).
 
 If you use the code in your research, please cite our work as:
 
@@ -68,16 +68,15 @@ The paths can be queried by calling the `get_spheremap_path` service.
 
 ## Related work
 
-The approach deployed in DARPA SubT Challenge, where SphereMap was used for planning. [doi.org/10.55417/fr.2023001](https://doi.org/10.55417/fr.2023001), [pdf](https://fieldrobotics.net/Field_Robotics/Volume_3_files/Vol3_01.pdf).
+The approach deployed in DARPA SubT Challenge, where SphereMap was used for planning. [pdf](https://fieldrobotics.net/Field_Robotics/Volume_3_files/Vol3_01.pdf), [doi](https://doi.org/10.55417/fr.2023001).
 ```
-Petrlik, M., Petracek, P., Kratky, V., Musil, T., Stasinchuk, Y., Vrba, M., Baca, T., 
-Hert, D., Pecka M., Svoboda, T., and Saska M., "UAVs Beneath the Surface: 
-Cooperative Autonomy for Subterranean Search and Rescue in DARPA SubT", 
-Field Robotics 3:1–68, (2023).
+Petrlik, M., Petracek, P., Kratky, V., Musil, T., Stasinchuk, Y., Vrba, M., Baca, T., Hert, D.,
+Pecka M., Svoboda, T., and Saska M., "UAVs Beneath the Surface: Cooperative Autonomy
+for Subterranean Search and Rescue in DARPA SubT", Field Robotics 3:1–68, (2023).
 ```
 
 
-The MRS UAV system for enabling autonomous flight of UAVs. [doi.org/10.1007/s10846-021-01383-5](https://doi.org/10.1007/s10846-021-01383-5), [pdf](https://link.springer.com/content/pdf/10.1007/s10846-021-01383-5.pdf).
+The MRS UAV system for enabling autonomous flight of UAVs. [pdf](https://link.springer.com/content/pdf/10.1007/s10846-021-01383-5.pdf), [doi.org/10.1007/s10846-021-01383-5](https://doi.org/10.1007/s10846-021-01383-5).
 ```
 Baca, T., Petrlik, M., Vrba, M., Spurny, V., Penicka, R., Hert, D., and Saska, M.,
 "The MRS UAV System: Pushing the Frontiers of Reproducible Research, Real-world Deployment, and
