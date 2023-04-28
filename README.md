@@ -56,7 +56,7 @@ Currently, the LTV-Map described in the publication is built along with the Sphe
 
 An example of how to use the SphereMap can be found in the [`examples/`](https://github.com/ctu-mrs/spheremap/tree/master/examples) directory.
 To run the example, first download the dataset by running the [`examples/download_dataset.sh`](https://github.com/ctu-mrs/spheremap/tree/master/examples/download_dataset.sh) script.
-Then the example can be run using the [`examples/example.launch`](https://github.com/ctu-mrs/spheremap/tree/master/example.launch) launchfile.
+Then the example can be run using the [`examples/example.launch`](https://github.com/ctu-mrs/spheremap/tree/master/examples/example.launch) launchfile.
 After running the launchfile, the SphereMap server is initialized, the rosbag file with the dataset is played and an RViz window shows the process of building the SphereMap.
 The paths can be queried by calling the `get_spheremap_path` service.
 
@@ -65,3 +65,22 @@ The paths can be queried by calling the `get_spheremap_path` service.
 
 * Adding service for planning to multiple goals at one service call (for deciding between many goals).
 * Implementing LTV-Map sharing between UAVs and using them for cooperative navigation/exploration.
+
+## Related work
+
+The approach deployed in DARPA SubT Challenge, where SphereMap was used for planning. [doi.org/10.55417/fr.2023001](https://doi.org/10.55417/fr.2023001), [pdf](https://fieldrobotics.net/Field_Robotics/Volume_3_files/Vol3_01.pdf).
+```
+Petrlik, M., Petracek, P., Kratky, V., Musil, T., Stasinchuk, Y., Vrba, M., Baca, T., 
+Hert, D., Pecka M., Svoboda, T., and Saska M., "UAVs Beneath the Surface: 
+Cooperative Autonomy for Subterranean Search and Rescue in DARPA SubT", 
+Field Robotics 3:1–68, (2023).
+```
+
+
+The MRS UAV system for enabling autonomous flight of UAVs. [doi.org/10.1007/s10846-021-01383-5](https://doi.org/10.1007/s10846-021-01383-5), [pdf](https://link.springer.com/content/pdf/10.1007/s10846-021-01383-5.pdf).
+```
+Baca, T., Petrlik, M., Vrba, M., Spurny, V., Penicka, R., Hert, D., and Saska, M.,
+"The MRS UAV System: Pushing the Frontiers of Reproducible Research, Real-world Deployment, and
+Education with Autonomous Unmanned Aerial Vehicles", J Intell Robot Syst 102, 26 (2021).
+```
+
