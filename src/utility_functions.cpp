@@ -519,8 +519,9 @@ void publishPointsMarkers(std::vector<octomap::point3d> points, std::vector<int>
     cubeCenter.y = y;
     cubeCenter.z = z;
 
-    occupiedNodesVis->markers[idx].pose.position = cubeCenter;
-    occupiedNodesVis->markers[idx].color.a       = 1;
+    occupiedNodesVis->markers[idx].pose.position      = cubeCenter;
+    occupiedNodesVis->markers[idx].pose.orientation.w = 1;
+    occupiedNodesVis->markers[idx].color.a            = 1;
     if (colors[i] == 0) {
       occupiedNodesVis->markers[idx].color.r = 1;
       occupiedNodesVis->markers[idx].color.g = 0;
@@ -582,8 +583,8 @@ void publishArrowMarkers(std::vector<octomap::point3d> points, std::vector<octom
     occupiedNodesVis->markers[idx].points.push_back(start_point);
     occupiedNodesVis->markers[idx].points.push_back(end_point);
 
-    /* occupiedNodesVis->markers[idx].pose.position = cubeCenter; */
-    occupiedNodesVis->markers[idx].color.a = 1;
+    occupiedNodesVis->markers[idx].pose.orientation.w = 1;
+    occupiedNodesVis->markers[idx].color.a            = 1;
     if (colors[i] == 0) {
       occupiedNodesVis->markers[idx].color.r = 1;
       occupiedNodesVis->markers[idx].color.g = 0;
@@ -707,7 +708,8 @@ visualization_msgs::Marker getMarkerSphere(octomap::point3d pos, float d, octoma
   pos2.y = pos.y();
   pos2.z = pos.z();
 
-  res.pose.position = pos2;
+  res.pose.position      = pos2;
+  res.pose.orientation.w = 1;
 
   res.color.a = alpha;
   res.color.r = color.x();
@@ -718,8 +720,10 @@ visualization_msgs::Marker getMarkerSphere(octomap::point3d pos, float d, octoma
   res.scale.x = d;
   res.scale.y = d;
   res.scale.z = d;
+
   return res;
 }
+
 visualization_msgs::Marker getMarkerCube(octomap::point3d pos, float d, octomap::point3d color) {
   visualization_msgs::Marker res;
   geometry_msgs::Point       pos2;
@@ -727,7 +731,8 @@ visualization_msgs::Marker getMarkerCube(octomap::point3d pos, float d, octomap:
   pos2.y = pos.y();
   pos2.z = pos.z();
 
-  res.pose.position = pos2;
+  res.pose.position      = pos2;
+  res.pose.orientation.w = 1;
 
   res.color.a = 1;
   res.color.r = color.x();
@@ -759,10 +764,11 @@ visualization_msgs::Marker getMarkerLine(octomap::point3d pos, octomap::point3d 
 
   res.points.push_back(pos2);
   res.points.push_back(pos3);
-  res.type    = visualization_msgs::Marker::LINE_LIST;
-  res.scale.x = linewidth;
-  res.scale.y = linewidth;
-  res.scale.z = linewidth;
+  res.type               = visualization_msgs::Marker::LINE_LIST;
+  res.scale.x            = linewidth;
+  res.scale.y            = linewidth;
+  res.scale.z            = linewidth;
+  res.pose.orientation.w = 1;
 
   return res;
 }
@@ -793,6 +799,7 @@ visualization_msgs::Marker getMarkerBlock(octomap::point3d pos, float alpha, flo
   tf2::Quaternion quat;
   tf2::Matrix3x3  matrix(ca * cb, sa, -sb * ca, -cb * sa, ca, sa * sb, sb, 0, cb);
   matrix.getRotation(quat);
+  quat.normalize();
   res.pose.orientation.x = quat.x();
   res.pose.orientation.y = quat.y();
   res.pose.orientation.z = quat.z();
@@ -846,10 +853,11 @@ std::shared_ptr<std::vector<visualization_msgs::Marker>> getSegmentOctreeMarkers
     (*res_ptr)[i].color.b  = color.z();
     (*res_ptr)[i].color.a  = segment_octree_->segments[i].is_narrow_space ? (0.5 + segment_octree_->segments[i].narrowness_factor / 2) : 1;
 
-    (*res_ptr)[i].type    = visualization_msgs::Marker::CUBE_LIST;
-    (*res_ptr)[i].scale.x = voxel_size;
-    (*res_ptr)[i].scale.y = voxel_size;
-    (*res_ptr)[i].scale.z = voxel_size;
+    (*res_ptr)[i].type               = visualization_msgs::Marker::CUBE_LIST;
+    (*res_ptr)[i].scale.x            = voxel_size;
+    (*res_ptr)[i].scale.y            = voxel_size;
+    (*res_ptr)[i].scale.z            = voxel_size;
+    (*res_ptr)[i].pose.orientation.w = 1;
 
     if (segment_octree_->segments[i].border_keys.size() == 0) {
       continue;
@@ -1031,7 +1039,7 @@ std::vector<visualization_msgs::Marker> getSegmapDetailedMarkers(std::shared_ptr
 /* getSegmapBlockMarkers() //{ */
 std::vector<visualization_msgs::Marker> getSegmapBlockMarkers(std::shared_ptr<SegMap> segmap_, bool is_received_segmap) {
   if (segmap_ == NULL) {
-    ROS_ERROR("dont give me null segmaps you retard");
+    ROS_ERROR("attempted to visualize null segmap");
     return {};
   }
   std::vector<visualization_msgs::Marker> res = {};
@@ -1224,6 +1232,8 @@ std::vector<visualization_msgs::Marker> getSpheremapPointMarkers(octomap::point3
   marker.color.b = 0.2;
   marker.color.a = 1;
 
+  marker.pose.orientation.w = 1;
+
   marker.type = visualization_msgs::Marker::POINTS;
 
   visualization_msgs::Marker line_marker;
@@ -1236,6 +1246,8 @@ std::vector<visualization_msgs::Marker> getSpheremapPointMarkers(octomap::point3
   line_marker.color.g = 0;
   line_marker.color.b = 0;
   line_marker.color.a = 1;
+
+  line_marker.pose.orientation.w = 1;
 
   std::pair<octomap::OcTreeKey, octomap::OcTreeKey> bbx_keys = spheremap_->getMaxSearchBBXBorderKeys(center, box_halfsize);
   for (octomap::SphereMapOcTree::leaf_bbx_iterator it = spheremap_->nodes->begin_leafs_bbx(bbx_keys.first, bbx_keys.second, 16);
@@ -1308,6 +1320,8 @@ std::vector<visualization_msgs::Marker> getSpheremapSegmentMarkers(std::shared_p
   marker.color.b = 0.2;
   marker.color.a = 1;
 
+  marker.pose.orientation.w = 1;
+
   marker.type = visualization_msgs::Marker::POINTS;
 
   visualization_msgs::Marker line_marker;
@@ -1320,6 +1334,8 @@ std::vector<visualization_msgs::Marker> getSpheremapSegmentMarkers(std::shared_p
   line_marker.color.g = 0;
   line_marker.color.b = 0;
   line_marker.color.a = 1;
+
+  line_marker.pose.orientation.w = 1;
 
   /* visualization_msgs::Marker getMarkerLine(octomap::point3d pos, octomap::point3d endpos, octomap::point3d color, float linewidth) { */
   for (std::map<uint, SphereMapSegment>::iterator it = spheremap_->segments.begin(); it != spheremap_->segments.end(); it++) {
@@ -1396,7 +1412,8 @@ std::vector<visualization_msgs::Marker> getSpheremapNavigationMarkers(std::share
       line_marker.type    = visualization_msgs::Marker::LINE_STRIP;
       line_marker.scale.x = 0.1;
       line_marker.scale.y = 0.1;
-      line_marker.scale.z = 0.1;
+
+      line_marker.pose.orientation.w = 1;
 
       for (uint i = 0; i < path_it->second.positions.size(); i++) {
         geometry_msgs::Point pos2;
@@ -1439,6 +1456,8 @@ std::vector<visualization_msgs::Marker> getSpheremapNavigationMarkers(std::share
     line_marker.color.b = 0;
     line_marker.color.a = 1;
 
+    line_marker.pose.orientation.w = 1;
+
     geometry_msgs::Point                       pos2;
     std::map<uint, SphereMapSegment>::iterator s1_query   = spheremap_->segments.find(spheremap_->portals[i].first);
     auto                                       connection = s1_query->second.connections.find(spheremap_->portals[i].second);
@@ -1474,6 +1493,8 @@ std::vector<visualization_msgs::Marker> getPointsMarkers(std::vector<pcl::PointX
   marker.scale.x = size;
   marker.scale.y = size;
   marker.scale.z = size;
+
+  marker.pose.orientation.w = 1;
 
   marker.type = visualization_msgs::Marker::POINTS;
   geometry_msgs::Point pos2;
@@ -1516,6 +1537,8 @@ std::vector<visualization_msgs::Marker> getSphereMapPathsMarkers(std::vector<Sph
     line_marker.color.g = path_color.y();
     line_marker.color.b = path_color.z();
     line_marker.color.a = 1;
+
+    line_marker.pose.orientation.w = 1;
 
     for (uint i = 0; i < p.positions.size(); i++) {
       geometry_msgs::Point pos2;

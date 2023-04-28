@@ -170,8 +170,8 @@ void ExplorationMapper::initialize(ros::NodeHandle* nh) {
   /* } */
 
   /* services */
-  spheremap_planning_srv_        = nh->advertiseService("GetSphereMapPathSrv", &ExplorationMapper::callbackGetSphereMapPathSrv, this);
-  spheremap_planning_params_srv_ = nh->advertiseService("SetSafetyPlanningParams", &ExplorationMapper::callbackSetSafetyPlanningParams, this);
+  spheremap_planning_srv_        = nh->advertiseService("get_spheremap_path", &ExplorationMapper::callbackGetSphereMapPathSrv, this);
+  spheremap_planning_params_srv_ = nh->advertiseService("set_safety_planning_params", &ExplorationMapper::callbackSetSafetyPlanningParams, this);
 
   is_initialized_ = true;
   ROS_INFO("mapper init done");

@@ -1,0 +1,41 @@
+<launch>
+
+  <arg name="namespace" default="" />
+
+  <arg name="topic_odom_in" default="" />
+  <arg name="topic_octomap_binary_in" default="" />
+
+  <arg name="baselink_frame" default="$(arg namespace)/fcu"/>
+  <arg name="map_frame" default="$(arg namespace)/stable_origin"/>
+
+  <group ns="$(arg namespace)">
+
+    <node pkg="nodelet" type="nodelet" name="spheremap_server_mapper" args="standalone spheremap_server/MappingNodelet" output="screen">
+
+      <rosparam file="$(find spheremap_server)/config/params.yaml" />
+
+      <param name="uav_name" type="string" value="$(arg namespace)" />
+      <param name="map_frame" type="string" value="$(arg map_frame)"/>
+
+      <param name="baselink_frame" type="string" value="$(arg baselink_frame)" />
+
+        <!-- Publishers -->
+      <remap from="~spheremap_spheres" to="spheremap_server_vis/spheremap/spheres" />
+      <remap from="~spheremap_graph" to="spheremap_server_vis/spheremap/graph" />
+      <remap from="~spheremap_topology" to="spheremap_server_vis/spheremap/topology" />
+      <remap from="~spheremap_navigation" to="spheremap_server_vis/spheremap/navigation" />
+      <remap from="~spheremap_debug" to="spheremap_server_vis/spheremap/debug" />
+
+        <!-- Subscribers -->
+      <remap from="~odom_uav_in" to="$(arg topic_odom_in)" />
+      <remap from="~octomap_binary_in" to="$(arg topic_octomap_binary_in)" />
+
+        <!-- Services -->
+      <remap from="~get_spheremap_path" to="~get_spheremap_path" />
+      <remap from="~set_safety_planning_params" to="~set_safety_planning_params" />
+
+    </node>
+
+  </group>
+
+</launch>

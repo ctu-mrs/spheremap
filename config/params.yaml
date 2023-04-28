@@ -43,3 +43,4 @@ topology_mapping:
   voxel_min_safe_distance: 0.60
   segmap_default_depth_offset: 2
 
+use_staging_area_wall: false

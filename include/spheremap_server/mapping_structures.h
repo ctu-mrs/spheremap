@@ -796,8 +796,6 @@ public:
   void                                initializeOctomaps(float resolution, float safedist);
   void                                update(octomap::point3d current_position_, float current_heading_, std::shared_ptr<octomap::OcTree> occupancy_octree_,
                                              std::shared_ptr<PCLMap> pcl_map_ptr, std::vector<int>& segs_to_update);
-  static std::vector<SegmapMsg> convertSegmapToFragmentMsgs(std::shared_ptr<SegMap>, uint segmap_message_index, int max_data_bytes,
-                                                                        tf2_ros::Buffer* tfbuf, std::string segmap_frame, std::string shared_frame);
   static std::shared_ptr<SegMap> convertFragmentMsgsToSegmap(std::vector<SegmapMsg>, tf2_ros::Buffer* tfbuf, std::string segmap_frame,
                                                              std::string shared_frame, bool use_shared_frame=false);
   std::vector<std::pair<float, int>> calculatePossibleSegmentsOfPointInReceivedSegmap(octomap::point3d point);

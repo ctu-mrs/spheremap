@@ -3,7 +3,7 @@
 
   <name>spheremap_server</name>
   <version>0.0.1</version>
-  <description>maps exploration</description>
+  <description>SphereMap is a multi-layer dynamic map built online on-board a UAV. It allows weighing path length and distance from obstacles along the path for safety-aware planning, while also finding paths faster than a conventional occupancy grid</description>
 
   <maintainer email="musilto8@fel.cvut.cz">Tomas Musil</maintainer>
 
@@ -16,21 +16,15 @@
   <depend>roscpp</depend>
   <depend>nodelet</depend>
   <depend>std_msgs</depend>
-  <depend>mrs_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>octomap_msgs</depend>
-  <depend>darpa_mrs_msgs</depend>
-  <depend>darpa_msgs</depend>
-  <depend>darpa_planning_lib</depend>
 
   <build_depend>message_generation</build_depend>
-  <build_depend>mrs_lib</build_depend>
 
   <exec_depend>message_runtime</exec_depend>
 
   <export>
 
-    <!-- The plugins.xml file defines nodelet as a plugin -->
     <nodelet plugin="${prefix}/plugins.xml" />
 
   </export>

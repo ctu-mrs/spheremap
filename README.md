@@ -34,13 +34,13 @@ There are various configuration params with which you can play with, described i
 
 ### Safety-aware planning
 
-Call the service `GetSphereMapPathSrv` for pathfinding in the SphereMap. 
+Call the service `get_spheremap_path` for pathfinding in the SphereMap. 
 It will transform the given start and goal points from the given frame to the SphereMap frame, try to find a path, and return it as an array of `geometry_msgs::Point` if successful.
 If you set the flag `ignore_precomputed_paths` to `true` in the config file, the planning will run A* over the entire SphereMap graph, which can give a better path than using the precomputed paths, but will be slower.
 If a start/goal point is not covered by the SphereMap, the planning will take the nearest sphere up to a distance specified in the config file, as the start node, so be aware of that.
 
 The path cost is computed as in the [paper](https://arxiv.org/pdf/2302.01833.pdf), and you can set the riskiness weight (`xi` in the publication, `spheremap_planning_safety_weight` in the config file) as required. 
-There is also a service for changing the weight mid-flight `SetSafetyPlanningParams`.
+There is also a service for changing the weight mid-flight `set_safety_planning_params`.
 
 ### Using the LTV-Map lightweight topological-volumetric map
 
