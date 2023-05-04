@@ -19,6 +19,9 @@ Rapid Safety-Aware UAV Planning". IEEE Robotics and Automation Letters 7(4):1100
 
 ## Dependencies
 
+Tested with ROS Noetic running on Ubuntu 20.04.
+
+
 * [octomap](https://octomap.github.io/)
 * [pcl_ros](http://wiki.ros.org/pcl_ros)
 
