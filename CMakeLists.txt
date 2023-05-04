@@ -32,12 +32,12 @@ find_package(catkin REQUIRED COMPONENTS
   octomap_msgs
   )
 
-add_message_files(
+add_message_files(DIRECTORY msg
   FILES
   SegmapMsg.msg
 )
 
-add_service_files(
+add_service_files(DIRECTORY srv
   FILES
   GetSphereMapPathSrv.srv
   SetSafetyPlanningParamsSrv.srv
@@ -52,7 +52,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES SpheremapServer 
-  CATKIN_DEPENDS roscpp std_msgs geometry_msgs
+  CATKIN_DEPENDS roscpp std_msgs geometry_msgs octomap_ros message_runtime
   )
 
 include_directories(
@@ -70,6 +70,8 @@ add_library(SpheremapServer src/mapper.cpp
   src/utility_functions.cpp
   src/spheremap.cpp
   )
+
+add_dependencies(SpheremapServer spheremap_server_generate_messages)
 
 target_link_libraries(SpheremapServer 
   ${catkin_LIBRARIES}

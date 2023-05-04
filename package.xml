@@ -18,10 +18,9 @@
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>octomap_msgs</depend>
-
-  <build_depend>message_generation</build_depend>
-
-  <exec_depend>message_runtime</exec_depend>
+  <depend>octomap_ros</depend>
+  <depend>message_generation</depend>
+  <depend>message_runtime</depend>
 
   <export>
 
